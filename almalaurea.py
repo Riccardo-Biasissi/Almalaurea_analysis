@@ -134,7 +134,7 @@ gruppo = {'tutti':'tutti',
           'Educazione e formazione':'1','Arte e design':'2','Letterario umanistico':'3',
           'Linguistico':'4','Politico-sociale e comunicazione':'5','Psicologico':'6',
           'Economico':'7','Giuridico':'8','Scientifico':'9',
-          'Informatica e tecnologie ICT':'10','Architettura e ing civile':'11',
+          'Informatica e tecnologie ICT':'10','Architettura e Ing civile':'11',
           "Ing industriale e dell'informazione":'12',
           'Agrario-forestale e veterinario':'13','Medico-sanitario e farmaceutico':'14',
           'Scienze motorie e sportive':'15'}
@@ -479,7 +479,9 @@ def almalaurea_occupazione(ID,Y,A,G,C,YRL):
     
     return my_return
 
-# Crea file .csv con i dati estratti
+# ###################################
+# ### Estrattore dati da almlaurea.it
+# ###################################
 
 # ID = id ateneo
 # A = area
@@ -548,7 +550,6 @@ def almalaurea_occupazione(ID,Y,A,G,C,YRL):
 df = pd.read_csv('almalaurea.csv')
 
 G = df['gruppo']
-# YRL = list(df['anni_da_conseguimento_titolo'].unique())
 YRL = ['1','3','5']
 
 for yrl in YRL:
@@ -599,9 +600,9 @@ for yrl in YRL:
     plt.close()
 
 
-######################################
+###########################################################
 ### Grafico divario maschile-femminile retribuzione mensile
-######################################
+###########################################################
 
 fig, ax = plt.subplots(4, 4, sharex=True, sharey=True, figsize=(24, 20))
 
@@ -640,165 +641,43 @@ plt.savefig('divario_retributivo.png', dpi=200, bbox_inches='tight')
 
 plt.close()
 
+################################
+### Grafico tasso disoccupazione
+################################
 
+fig, ax = plt.subplots(4, 4, sharex=True, sharey=True, figsize=(24, 20))
 
+fig.suptitle('Tasso di disoccupazione totale (a 1, 3, 5 anni dal titolo) per gruppo disciplinare (classificazione MUR 2020)',
+             y=0.93)
+fig.supxlabel('Anno', y=0.09)
+fig.supylabel('Tasso di disoccupazione [%]', x=0.08)
 
+for idx, g in enumerate([str(i) for i in range(1, 16)] + ['tutti']):
+    row, col = idx // 4, idx % 4
+    if g != 'tutti':
+        title = f'Gruppo {gruppo_id[g]}'
+        ax[row][col].set_title(title.replace(' e ', ' e\n'))
+    else:
+        ax[row][col].set_title('Totale')
 
+    for yrl, color, label in zip(['1', '3', '5'], ['royalblue', 'deeppink', 'darkgreen'], ['1 anno', '3 anni', '5 anni']):
+        df_temp = df[(df['gruppo'] == g) & (df['anni_da_conseguimento_titolo'] == int(yrl))]
+        if not df_temp.empty:
+            anni = df_temp['anno']
+            tasso = df_temp['tasso_disoccupazione_totale']
+            ax[row][col].plot(anni, tasso, marker='o', lw=2, color=color, label=label)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# ID = 'tutti'
-# Y = '2021'
-# A = 'tutti'
-# G = 'tutti'
-# C = "11066"
-# YRL = "5"
-
-# data = almalaurea_occupazione(ID, Y, A, G, C, YRL)
-
-# print(data)
-
-
-
-
-# ID,A,C,YRL = 'tutti','tutti','tutti','1'
-
-# gruppi = np.arange(1,16)
-# anni = np.arange(2008,2023)
-
-# fig,ax = plt.subplots(4,4,sharex=True,sharey=True,figsize=(24,20))
-
-# fig.suptitle(f'Tasso di disoccupazione totale (a 1, 3 o 5 anni dal titolo) suddiviso per gruppo disciplinare (classificazione MUR 2020)',
-#               y=0.93)
-# fig.supxlabel('Anno',y=0.09)
-# fig.supylabel('Tasso di disoccupazione [%]',x=0.08)
-
-# for i in range(len(gruppi)):
-#     G = str(gruppi[i])
-#     T1,T3,T5 = [],[],[]
-#     for Y in anni:
-#         Y = str(Y)
-#         data = almalaurea_occupazione(ID, Y, A, G, C, '1')
-#         T1.append(data[4])
-#         print(Y,data[-1])
-#         data = almalaurea_occupazione(ID, Y, A, G, C, '3')
-#         T3.append(data[4])
-#         print(Y,data[-1])
-#         data = almalaurea_occupazione(ID, Y, A, G, C, '5')
-#         T5.append(data[4])
-#         print(Y,data[-1])
+    ax[row][col].set_ylim(0, 35)
+    ax[row][col].grid()
     
-#     data[-1] = 'Gruppo '+data[-1]
-        
-#     if len(data[-1])>=30:
-#         data[-1] = data[-1].replace(' e ',' e\n')
+    if idx == 11:
+        ax[row][col].annotate('Source: AlmaLaurea\n\nElaboration by\nBiasissi Riccardo',
+                              xy=(0.03, 0.95), xytext=(0.03, 0.95), xycoords='axes fraction',
+                              va='top', ha='left', fontsize=15)
     
-#     ax[i//4,i%4].set_title(f"{data[-1]}")
-#     ax[i//4,i%4].plot(anni,T1,c='royalblue',ls='solid',marker='o')
-#     ax[i//4,i%4].plot(anni,T3,c='deeppink',ls='solid',marker='s')
-#     ax[i//4,i%4].plot(anni,T5,c='darkgreen',ls='solid',marker='D')
-    
-#     ax[i//4,i%4].set_xticks([2010,2015,2020])
-#     ax[i//4,i%4].set_xticklabels([str(k) for k in [2010,2015,2020]])
-    
-#     ax[i//4,i%4].set_ylim(0,35)
-    
-#     ax[i//4,i%4].grid()
+    if idx == 15:
+        ax[row][col].legend()
 
-# i+=1
-# G = 'tutti'
-# T1,T3,T5 = [],[],[]
-# for Y in anni:
-#     Y = str(Y)
-#     data = almalaurea_occupazione(ID, Y, A, G, C, '1')
-#     T1.append(data[4])
-#     data = almalaurea_occupazione(ID, Y, A, G, C, '3')
-#     T3.append(data[4])
-#     data = almalaurea_occupazione(ID, Y, A, G, C, '5')
-#     T5.append(data[4])
-#     print(Y,data[-1])
-
-# ax[i//4,i%4].set_title("Totale")
-# ax[i//4,i%4].plot(anni,T1,c='royalblue',ls='solid',marker='o',label='1 anno')
-# ax[i//4,i%4].plot(anni,T3,c='deeppink',ls='solid',marker='s',label='3 anni')
-# ax[i//4,i%4].plot(anni,T5,c='darkgreen',ls='solid',marker='D',label='5 anni')
-
-# ax[i//4,i%4].set_ylim(0,35)
-
-# ax[i//4,i%4].legend()
-# ax[i//4,i%4].grid()
-
-# ax[i//4][i%4].annotate('Source: AlmaLaurea''\n''@_rickroll_', 
-#                         xy=(0.05,0.95), xytext=(0.05,0.95), xycoords='axes fraction',
-#                         va='top', ha='left', fontsize=13)
-
-
-# plt.subplots_adjust(wspace=0.06, hspace=0.24)
-
-# # plt.savefig('disoccupazione_gruppi.png', dpi=200, bbox_inches='tight')
-
-# plt.show()
-
-
-
-
-
-
-
-
-
-
-
-
-# C = ['11020','11015','11201','11200']
-# nomi = ['Fisica (LM-17)',"Filologia, letterature e""\n""storia dell'antichità (LM-15)",
-#         'Filologia moderna (LM-14)','Scienze filosofiche (LM-78)']
-# anni = np.arange(2008,2023)
-
-# for i in range(len(C)):
-#     c = C[i]
-#     y = []
-#     for anno in anni:
-#         anno = str(anno)
-#         data = almalaurea_occupazione('tutti', anno, 'tutti', 'tutti', c, '1')
-#         y.append(data[7])
-#         print(anno)
-#     print(y)
-#     plt.plot(anni,y,label=nomi[i],marker='o',markersize=10,lw=3)
-
-# plt.ylabel('Retribuzione mensile media netta a 1 anno dal titolo [€]')
-
-# # plt.ylim(0,40)
-
-# plt.legend(ncols=2)
-# plt.grid()
-
-# plt.show()
+plt.subplots_adjust(wspace=0.06, hspace=0.24)
+plt.savefig('disoccupazione_gruppi.png', dpi=200, bbox_inches='tight')
+plt.close()
