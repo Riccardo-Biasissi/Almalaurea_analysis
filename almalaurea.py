@@ -479,9 +479,9 @@ def almalaurea_occupazione(ID,Y,A,G,C,YRL):
     
     return my_return
 
-# ###################################
-# ### Estrattore dati da almlaurea.it
-# ###################################
+###################################
+### Estrattore dati da almlaurea.it
+###################################
 
 # ID = id ateneo
 # A = area
@@ -490,6 +490,7 @@ def almalaurea_occupazione(ID,Y,A,G,C,YRL):
 # YRL = anni di distanza da conseguimento
 # ID,A,G,C,YRL = 'tutti','tutti',["tutti"]+list(np.arange(0,15)+1),'tutti',[1,3,5]
 # Y = np.arange(2008,2025)
+# a = 1
 
 # data = []
 
@@ -502,12 +503,13 @@ def almalaurea_occupazione(ID,Y,A,G,C,YRL):
 #             for y in Y:
 #                 y = str(y)
 #                 temp = almalaurea_occupazione(ID, y, A, g, C, yrl)
-#                 data.append([y, yrl, g, ID, temp[0][0], temp[1][0], temp[2][0], temp[3][0], temp[4][0], temp[5][0], temp[6][0], temp[7][0]])
+#                 data.append([y, yrl, a, g, ID, temp[0][0], temp[1][0], temp[2][0], temp[3][0], temp[4][0], temp[5][0], temp[6][0], temp[7][0]])
 #                 pbar.update(1)
 
 # columns = [
 #     "anno",
 #     "anni_da_conseguimento_titolo",
+#     "area",
 #     "gruppo",
 #     "ateneo",
 #     "numero_laureati",
@@ -549,135 +551,196 @@ def almalaurea_occupazione(ID,Y,A,G,C,YRL):
 
 df = pd.read_csv('almalaurea.csv')
 
-G = df['gruppo']
-YRL = ['1','3','5']
+# G = df['gruppo']
+# YRL = ['1','3','5']
 
-for yrl in YRL:
-    fig, ax = plt.subplots(4,4,sharex=True,sharey=True,figsize=(24,20))
+# for yrl in YRL:
+#     fig, ax = plt.subplots(4,4,sharex=True,sharey=True,figsize=(24,20))
 
-    fig.suptitle(f'Retribuzione mensile netta (a {yrl} anni dal titolo) suddivisa per genere e gruppo disciplinare (classificazione MUR 2020)',
-                  y=0.93)
-    fig.supxlabel('Anno',y=0.08)
-    fig.supylabel('Retribuzione mensile netta [€]',x=0.08)
+#     fig.suptitle(f'Retribuzione mensile netta (a {yrl} anni dal titolo) suddivisa per genere e gruppo disciplinare (classificazione MUR 2020)',
+#                   y=0.93)
+#     fig.supxlabel('Anno',y=0.08)
+#     fig.supylabel('Retribuzione mensile netta [€]',x=0.08)
 
-    for g in G:
-        if g!='tutti':
-            title = f'Gruppo {gruppo_id[g]}'
-            ax[(int(g)-1)//4][(int(g)-1)%4].set_title(title.replace(' e ',' e\n'))
+#     for g in G:
+#         if g!='tutti':
+#             title = f'Gruppo {gruppo_id[g]}'
+#             ax[(int(g)-1)//4][(int(g)-1)%4].set_title(title.replace(' e ',' e\n'))
 
-            df_temp = df[(df['gruppo']==g) & (df['anni_da_conseguimento_titolo']==int(yrl))]
-            M,F,T = df_temp['retribuzione_mensile_maschi'],df_temp['retribuzione_mensile_femmine'],df_temp['retribuzione_mensile']
+#             df_temp = df[(df['gruppo']==g) & (df['anni_da_conseguimento_titolo']==int(yrl))]
+#             M,F,T = df_temp['retribuzione_mensile_maschi'],df_temp['retribuzione_mensile_femmine'],df_temp['retribuzione_mensile']
 
-            ax[(int(g)-1)//4][(int(g)-1)%4].plot(df_temp['anno'],M,color='royalblue',marker='o',lw=1.5,label='Maschi')
-            ax[(int(g)-1)//4][(int(g)-1)%4].plot(df_temp['anno'],F,color='deeppink',marker='o',lw=1.5,label='Femmine')
-            ax[(int(g)-1)//4][(int(g)-1)%4].plot(df_temp['anno'],T,color='black',marker='o',lw=1.5,label='Totale')
+#             ax[(int(g)-1)//4][(int(g)-1)%4].plot(df_temp['anno'],M,color='royalblue',marker='o',lw=1.5,label='Maschi')
+#             ax[(int(g)-1)//4][(int(g)-1)%4].plot(df_temp['anno'],F,color='deeppink',marker='o',lw=1.5,label='Femmine')
+#             ax[(int(g)-1)//4][(int(g)-1)%4].plot(df_temp['anno'],T,color='black',marker='o',lw=1.5,label='Totale')
 
-            ax[(int(g)-1)//4][(int(g)-1)%4].grid()
+#             ax[(int(g)-1)//4][(int(g)-1)%4].grid()
 
-    g = 'tutti'
-    ax[-1][-1].set_title('Totale')
+#     g = 'tutti'
+#     ax[-1][-1].set_title('Totale')
 
-    df_temp = df[(df['gruppo']==g) & (df['anni_da_conseguimento_titolo']==int(yrl))]
-    M,F,T = df_temp['retribuzione_mensile_maschi'],df_temp['retribuzione_mensile_femmine'],df_temp['retribuzione_mensile']
+#     df_temp = df[(df['gruppo']==g) & (df['anni_da_conseguimento_titolo']==int(yrl))]
+#     M,F,T = df_temp['retribuzione_mensile_maschi'],df_temp['retribuzione_mensile_femmine'],df_temp['retribuzione_mensile']
 
-    g = 16
+#     g = 16
 
-    ax[(g-1)//4][(g-1)%4].plot(df_temp['anno'],M,color='royalblue',marker='o',lw=2,label='Maschi')
-    ax[(g-1)//4][(g-1)%4].plot(df_temp['anno'],F,color='deeppink',marker='o',lw=2,label='Femmine')
-    ax[(g-1)//4][(g-1)%4].plot(df_temp['anno'],T,color='black',marker='o',lw=2,label='Totale')
+#     ax[(g-1)//4][(g-1)%4].plot(df_temp['anno'],M,color='royalblue',marker='o',lw=2,label='Maschi')
+#     ax[(g-1)//4][(g-1)%4].plot(df_temp['anno'],F,color='deeppink',marker='o',lw=2,label='Femmine')
+#     ax[(g-1)//4][(g-1)%4].plot(df_temp['anno'],T,color='black',marker='o',lw=2,label='Totale')
 
-    ax[(int(g)-1)//4][(int(g)-1)%4].grid()
-    ax[(int(g)-1)//4][(int(g)-1)%4].legend()
+#     ax[(int(g)-1)//4][(int(g)-1)%4].grid()
+#     ax[(int(g)-1)//4][(int(g)-1)%4].legend()
 
-    ax[(int(g)-1)//4][(int(g)-1)%4].annotate('Source: AlmaLaurea''\n\n''Elaboration by''\n''Biasissi Riccardo', 
-                        xy=(0.97,0.03), xytext=(0.97,0.03), xycoords='axes fraction',
-                        va='bottom', ha='right',fontsize=15)
+#     ax[(int(g)-1)//4][(int(g)-1)%4].annotate('Source: AlmaLaurea''\n\n''Elaboration by''\n''Biasissi Riccardo', 
+#                         xy=(0.97,0.03), xytext=(0.97,0.03), xycoords='axes fraction',
+#                         va='bottom', ha='right',fontsize=15)
 
-    plt.subplots_adjust(wspace=0.08, hspace=0.24)
+#     plt.subplots_adjust(wspace=0.08, hspace=0.24)
 
-    plt.savefig(f'retribuzione_gruppi_{yrl}.png', dpi=200, bbox_inches='tight')
+#     plt.savefig(f'retribuzione_gruppi_{yrl}.png', dpi=200, bbox_inches='tight')
 
-    plt.close()
+#     plt.close()
 
 
-###########################################################
-### Grafico divario maschile-femminile retribuzione mensile
-###########################################################
+# ###########################################################
+# ### Grafico divario maschile-femminile retribuzione mensile
+# ###########################################################
 
-fig, ax = plt.subplots(4, 4, sharex=True, sharey=True, figsize=(24, 20))
+# fig, ax = plt.subplots(4, 4, sharex=True, sharey=True, figsize=(24, 20))
 
-fig.suptitle('Divario retributivo maschile-femminile (a 1, 3, 5 anni dal titolo) per gruppo disciplinare (classificazione MUR 2020)',
+# fig.suptitle('Divario retributivo maschile-femminile (a 1, 3, 5 anni dal titolo) per gruppo disciplinare (classificazione MUR 2020)',
+#              y=0.93)
+# fig.supxlabel('Anno', y=0.08)
+# fig.supylabel('Divario retributivo [%]', x=0.08)
+
+# for idx, g in enumerate([str(i) for i in range(1, 16)] + ['tutti']):
+#     row, col = idx // 4, idx % 4
+#     if g != 'tutti':
+#         title = f'Gruppo {gruppo_id[g]}'
+#         ax[row][col].set_title(title.replace(' e ', ' e\n'))
+#     else:
+#         ax[row][col].set_title('Totale')
+
+#     for yrl, color, label in zip(['1', '3', '5'], ['royalblue', 'deeppink', 'darkgreen'], ['1 anno', '3 anni', '5 anni']):
+#         df_temp = df[(df['gruppo'] == g) & (df['anni_da_conseguimento_titolo'] == int(yrl))]
+#         if not df_temp.empty:
+#             M = df_temp['retribuzione_mensile_maschi']
+#             F = df_temp['retribuzione_mensile_femmine']
+#             anni = df_temp['anno']
+#             divario = 100 * (M - F) / M
+#             ax[row][col].plot(anni, divario, marker='o', lw=2, color=color, label=label)
+
+#     ax[row][col].grid()
+#     if idx == 15:
+#         ax[row][col].legend()
+#         ax[row][col].annotate('Source: AlmaLaurea\n\nElaboration by\nBiasissi Riccardo',
+#                               xy=(0.03, 0.03), xytext=(0.03, 0.03), xycoords='axes fraction',
+#                               va='bottom', fontsize=15)
+
+# plt.subplots_adjust(wspace=0.08, hspace=0.24)
+
+# plt.savefig('divario_retributivo.png', dpi=200, bbox_inches='tight')
+
+# plt.close()
+
+# ################################
+# ### Grafico tasso disoccupazione
+# ################################
+
+# fig, ax = plt.subplots(4, 4, sharex=True, sharey=True, figsize=(24, 20))
+
+# fig.suptitle('Tasso di disoccupazione totale (a 1, 3, 5 anni dal titolo) per gruppo disciplinare (classificazione MUR 2020)',
+#              y=0.93)
+# fig.supxlabel('Anno', y=0.09)
+# fig.supylabel('Tasso di disoccupazione [%]', x=0.08)
+
+# for idx, g in enumerate([str(i) for i in range(1, 16)] + ['tutti']):
+#     row, col = idx // 4, idx % 4
+#     if g != 'tutti':
+#         title = f'Gruppo {gruppo_id[g]}'
+#         ax[row][col].set_title(title.replace(' e ', ' e\n'))
+#     else:
+#         ax[row][col].set_title('Totale')
+
+#     for yrl, color, label in zip(['1', '3', '5'], ['royalblue', 'deeppink', 'darkgreen'], ['1 anno', '3 anni', '5 anni']):
+#         df_temp = df[(df['gruppo'] == g) & (df['anni_da_conseguimento_titolo'] == int(yrl))]
+#         if not df_temp.empty:
+#             anni = df_temp['anno']
+#             tasso = df_temp['tasso_disoccupazione_totale']
+#             ax[row][col].plot(anni, tasso, marker='o', lw=2, color=color, label=label)
+
+#     ax[row][col].set_ylim(0, 35)
+#     ax[row][col].grid()
+    
+#     if idx == 11:
+#         ax[row][col].annotate('Source: AlmaLaurea\n\nElaboration by\nBiasissi Riccardo',
+#                               xy=(0.03, 0.95), xytext=(0.03, 0.95), xycoords='axes fraction',
+#                               va='top', ha='left', fontsize=15)
+    
+#     if idx == 15:
+#         ax[row][col].legend()
+
+# plt.subplots_adjust(wspace=0.06, hspace=0.24)
+# plt.savefig('disoccupazione_gruppi.png', dpi=200, bbox_inches='tight')
+# plt.close()
+
+# ######################################
+# ### Grafico numero laureati sul totale [%]
+# ######################################
+
+# Define area names for ylabel usage
+area_nome = ['ALE','EGS','STEM','SAV']
+
+fig, ax = plt.subplots(4, 4, sharex=True, figsize=(24, 20))
+
+fig.suptitle('Frazione di laureati sul totale per gruppo disciplinare (e aree disciplinari al 2024 in ordinata, classificazione MUR 2020)',
              y=0.93)
 fig.supxlabel('Anno', y=0.08)
-fig.supylabel('Divario retributivo [%]', x=0.08)
+fig.supylabel('Frazione di laureati [%]', x=0.07)
 
 for idx, g in enumerate([str(i) for i in range(1, 16)] + ['tutti']):
     row, col = idx // 4, idx % 4
     if g != 'tutti':
         title = f'Gruppo {gruppo_id[g]}'
         ax[row][col].set_title(title.replace(' e ', ' e\n'))
+
+        df_temp = df[(df['gruppo'] == g) & (df['anni_da_conseguimento_titolo'] == 1)]
+        anni = df_temp['anno']
+        n_laureati = df_temp['numero_laureati']
+        # Calcolo percentuale sul totale per quell'anno
+        tot_anno = df[(df['anni_da_conseguimento_titolo'] == 1) & (df['gruppo'] == 'tutti')]['numero_laureati']
+        print(df[(df['anni_da_conseguimento_titolo'] == 1) & (df['gruppo'] == 'tutti')]['numero_laureati'])
+        percentuale = 100 * np.array(n_laureati) / np.array(tot_anno)
+        ax[row][col].plot(anni, percentuale, marker='o', lw=2, color='black')
+
+        ax[row][col].set_ylim(0, 16)
+        if col != 0:
+            ax[row][col].set_yticklabels([])
+        ax[row][col].grid()
+
+        if col%4==0:
+            # Calcola la percentuale per area (somma dei gruppi associati)
+            area_gruppi = {
+                0: ['1', '2', '3', '4'],
+                1: ['5', '6', '7', '8'],
+                2: ['9', '10', '11', '12'],
+                3: ['13', '14', '15']
+            }
+            gruppi_area = area_gruppi.get(row, [])
+            tot_anno = df[(df['anno'] == 2024) & (df['anni_da_conseguimento_titolo'] == 1) & (df['gruppo'] == 'tutti')]['numero_laureati'].sum()
+            n_laureati_area = df[(df['anno'] == 2024) & (df['gruppo'].isin(gruppi_area)) & (df['anni_da_conseguimento_titolo'] == 1)]['numero_laureati'].sum()
+            percentuale_area = 100 * n_laureati_area / tot_anno
+            ax[row][col].set_ylabel(f"{area_nome[row]} - {percentuale_area:.1f}%")
     else:
-        ax[row][col].set_title('Totale')
+        ax[row][col].set_title('Totale assoluto annuale (in milioni)')
 
-    for yrl, color, label in zip(['1', '3', '5'], ['royalblue', 'deeppink', 'darkgreen'], ['1 anno', '3 anni', '5 anni']):
-        df_temp = df[(df['gruppo'] == g) & (df['anni_da_conseguimento_titolo'] == int(yrl))]
-        if not df_temp.empty:
-            M = df_temp['retribuzione_mensile_maschi']
-            F = df_temp['retribuzione_mensile_femmine']
-            anni = df_temp['anno']
-            divario = 100 * (M - F) / M
-            ax[row][col].plot(anni, divario, marker='o', lw=2, color=color, label=label)
-
-    ax[row][col].grid()
-    if idx == 15:
-        ax[row][col].legend()
-        ax[row][col].annotate('Source: AlmaLaurea\n\nElaboration by\nBiasissi Riccardo',
-                              xy=(0.03, 0.03), xytext=(0.03, 0.03), xycoords='axes fraction',
-                              va='bottom', fontsize=15)
-
-plt.subplots_adjust(wspace=0.08, hspace=0.24)
-
-plt.savefig('divario_retributivo.png', dpi=200, bbox_inches='tight')
-
-plt.close()
-
-################################
-### Grafico tasso disoccupazione
-################################
-
-fig, ax = plt.subplots(4, 4, sharex=True, sharey=True, figsize=(24, 20))
-
-fig.suptitle('Tasso di disoccupazione totale (a 1, 3, 5 anni dal titolo) per gruppo disciplinare (classificazione MUR 2020)',
-             y=0.93)
-fig.supxlabel('Anno', y=0.09)
-fig.supylabel('Tasso di disoccupazione [%]', x=0.08)
-
-for idx, g in enumerate([str(i) for i in range(1, 16)] + ['tutti']):
-    row, col = idx // 4, idx % 4
-    if g != 'tutti':
-        title = f'Gruppo {gruppo_id[g]}'
-        ax[row][col].set_title(title.replace(' e ', ' e\n'))
-    else:
-        ax[row][col].set_title('Totale')
-
-    for yrl, color, label in zip(['1', '3', '5'], ['royalblue', 'deeppink', 'darkgreen'], ['1 anno', '3 anni', '5 anni']):
-        df_temp = df[(df['gruppo'] == g) & (df['anni_da_conseguimento_titolo'] == int(yrl))]
-        if not df_temp.empty:
-            anni = df_temp['anno']
-            tasso = df_temp['tasso_disoccupazione_totale']
-            ax[row][col].plot(anni, tasso, marker='o', lw=2, color=color, label=label)
-
-    ax[row][col].set_ylim(0, 35)
-    ax[row][col].grid()
-    
-    if idx == 11:
-        ax[row][col].annotate('Source: AlmaLaurea\n\nElaboration by\nBiasissi Riccardo',
-                              xy=(0.03, 0.95), xytext=(0.03, 0.95), xycoords='axes fraction',
-                              va='top', ha='left', fontsize=15)
-    
-    if idx == 15:
-        ax[row][col].legend()
+        df_temp = df[(df['gruppo'] == g) & (df['anni_da_conseguimento_titolo'] == 1)]
+        anni = df_temp['anno']
+        n_laureati = df_temp['numero_laureati']/1e6
+        ax[row][col].plot(anni, n_laureati, marker='o', lw=2, color='black')
+        ax[row][col].grid()
+        ax[row][col].yaxis.tick_right()
 
 plt.subplots_adjust(wspace=0.06, hspace=0.24)
-plt.savefig('disoccupazione_gruppi.png', dpi=200, bbox_inches='tight')
+plt.savefig('numero_laureati_percentuale.png', dpi=200, bbox_inches='tight')
 plt.close()
