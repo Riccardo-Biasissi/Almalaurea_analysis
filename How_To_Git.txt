@@ -1,0 +1,48 @@
+Per fare push correttamente da una directory procedere così:
+- Creare una directory con lo stesso nome della repository
+- Aprire la directory e avviare il terminale da lì
+- Dare il comando
+  git init
+  questo inizializzerà correttamente la directory (e solo quella!!)
+- Dare il comando:
+  git remote add origin _link della repository github_ (eliminare i caratteri _)
+- Così, VS Code saprà a quale repository fare il push dei vari files
+
+Opzionale: se cambiassi nome della repository su github, devo aggiornare l'URL della cartella sul mio pc (visualizzabile tramite: git remote -v). Questo va fatto con il comando:
+git remote set-url origin NUOVO_URL
+
+
+
+Alternativamente, se la repository esiste già, basta dare:
+git init
+git clone _link della repository github_ (eliminare i caratteri _)
+in questo modo si creerà una cartella chiamata come la repository e già inizializzata
+
+
+
+
+Per inserire chi sta facendo i push:
+- Col comando 
+  git config --global user.email riccardo.biasissi@phd.unipd.it
+  git config --global user.name _nome che si vuole utilizzare_ (eliminare i caratteri _)
+
+
+
+Per aprire l'explorer dei file .root basta dare il comando "rootbrowse" da terminale dopo essersi assicurati di aver attivato l'environment conda che contiene root tramite questi comandi:
+source ~/miniconda/bin/activate (o inserire la directory di miniconda)
+conda activate main (o inserire il nome dell'environment)
+rootbrowse
+
+
+
+Per un problema con pylance (Import «module» could not be resolved Pylance), basta cercare nelle impostazioni (CTRL+,) la parola "extra paths" e aggiungere il percorso ottenuto tramite il comando print(«module».__file__)
+
+
+Per caricare i file procedere con questi comandi da terminale (dandoli dentro la directory con la cartella .git):
+git add .
+git commit -m "Messaggio per il commit"
+git push -u origin master
+
+
+Per ricevere i file aggiornati dalla repository basterà dare questo comando (nella directory con la cartella .git):
+git pull origin master
