@@ -709,7 +709,6 @@ for idx, g in enumerate([str(i) for i in range(1, 16)] + ['tutti']):
         n_laureati = df_temp['numero_laureati']
         # Calcolo percentuale sul totale per quell'anno
         tot_anno = df[(df['anni_da_conseguimento_titolo'] == 1) & (df['gruppo'] == 'tutti')]['numero_laureati']
-        print(df[(df['anni_da_conseguimento_titolo'] == 1) & (df['gruppo'] == 'tutti')]['numero_laureati'])
         percentuale = 100 * np.array(n_laureati) / np.array(tot_anno)
         ax[row][col].plot(anni, percentuale, marker='o', lw=2, color='black')
 
@@ -740,6 +739,10 @@ for idx, g in enumerate([str(i) for i in range(1, 16)] + ['tutti']):
         ax[row][col].plot(anni, n_laureati, marker='o', lw=2, color='black')
         ax[row][col].grid()
         ax[row][col].yaxis.tick_right()
+
+        ax[row][col].annotate('Source: AlmaLaurea\n\nElaboration by\nBiasissi Riccardo',
+                              xy=(0.97, 0.03), xytext=(0.97, 0.03), xycoords='axes fraction',
+                              va='bottom', ha='right', fontsize=15)
 
 plt.subplots_adjust(wspace=0.06, hspace=0.24)
 plt.savefig('numero_laureati_percentuale.png', dpi=200, bbox_inches='tight')
