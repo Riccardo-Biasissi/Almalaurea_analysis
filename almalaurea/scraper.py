@@ -77,7 +77,7 @@ def fetch_profile(university_id, area_id, gruppo_id):
     )
     pct_maschi = _extract_normal(r"Uomini([\s\S]*?)Donne")
     pct_femmine = _extract_normal(r"Donne([\s\S]*?)Età alla laurea")
-    voto_laurea = _extract_bold(
+    voto_laurea = _extract_normal(
         r"Voto di laurea([\s\S]*?)Regolarità negli studi"
     )
 
