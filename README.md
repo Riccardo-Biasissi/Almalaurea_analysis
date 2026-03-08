@@ -2,24 +2,29 @@
 
 Statistical analysis of Italian university graduates using data from [AlmaLaurea](https://www.almalaurea.it), Italy's national graduate database. Covers the period **2008–2024** across all 15 MUR 2020 discipline groups.
 
-## What's in this repo
+## Structure
 
-| File | Description |
-|---|---|
-| `almalaurea.py` | Main script: scraping functions + visualization |
-| `almalaurea.csv` | Pre-scraped dataset (~816 rows) |
-| `id_uni.csv` | Lookup table: university names → AlmaLaurea IDs |
-| `*.png` | Pre-generated charts |
+```
+├── almalaurea/
+│   ├── constants.py   — area/group mappings and shared config
+│   ├── scraper.py     — fetch_profile() and fetch_employment()
+│   └── plots.py       — one function per chart
+├── data/
+│   ├── almalaurea.csv — pre-scraped dataset (~816 rows)
+│   └── id_uni.csv     — lookup table: university names → AlmaLaurea IDs
+├── plots/             — output PNG charts
+└── main.py            — entry point
+```
 
-## Charts produced
+## Charts produced (`plots/`)
 
-| File | Content |
-|---|---|
-| `M_VS_F.png` | Male/female graduate percentages by discipline group |
-| `retribuzione_gruppi_{1,3,5}.png` | Monthly net salary by gender at 1, 3, and 5 years post-graduation |
-| `divario_retributivo.png` | Gender pay gap (%) over time by discipline group |
-| `disoccupazione_gruppi.png` | Unemployment rate over time by discipline group |
-| `numero_laureati_percentuale.png` | Share of graduates per discipline group over time |
+| File | Function | Content |
+|---|---|---|
+| `M_VS_F.png` | `plot_gender_split` | Male/female graduate percentages by discipline group *(requires HTTP)* |
+| `retribuzione_gruppi_{1,3,5}.png` | `plot_salary_by_group` | Monthly net salary by gender at 1, 3, and 5 years post-graduation |
+| `divario_retributivo.png` | `plot_pay_gap` | Gender pay gap (%) over time by discipline group |
+| `disoccupazione_gruppi.png` | `plot_unemployment` | Unemployment rate over time by discipline group |
+| `numero_laureati_percentuale.png` | `plot_graduate_share` | Share of graduates per discipline group over time |
 
 ## Tech stack
 
@@ -37,17 +42,21 @@ pip install numpy matplotlib requests pandas tqdm
 
 ## Usage
 
-The dataset has already been collected and saved to `almalaurea.csv`. To regenerate the charts, uncomment the relevant plotting blocks in `almalaurea.py` and run:
+The dataset has already been collected and saved to `data/almalaurea.csv`. To regenerate all charts, run:
 
 ```bash
-python almalaurea.py
+python main.py
 ```
 
-To re-scrape data from AlmaLaurea, uncomment the data collection loop (around line 495) and run the script. Be aware this makes many HTTP requests and may take a while.
+Output PNGs are written to the `plots/` directory.
+
+To add or remove a specific chart, edit the `main()` function in `main.py` and call (or remove) the corresponding plot function.
+
+To re-scrape data from AlmaLaurea, uncomment the `collect_data()` function in `main.py` and call it from `main()`. Be aware this makes many HTTP requests and may take a while.
 
 ## Data structure
 
-`almalaurea.csv` columns:
+`data/almalaurea.csv` columns:
 
 | Column | Description |
 |---|---|
