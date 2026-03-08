@@ -129,7 +129,7 @@ def plot_salary_by_group(df, out_dir):
         ax[3][3].plot(df_t['anno'], T, color='black',     marker='o', lw=2, label='Totale')
         ax[3][3].grid()
         ax[3][3].legend()
-        ax[3][3].annotate(
+        ax[2][3].annotate(
             'Source: AlmaLaurea\n\nElaboration by\nBiasissi Riccardo',
             xy=(0.97, 0.03), xytext=(0.97, 0.03), xycoords='axes fraction',
             va='bottom', ha='right', fontsize=15,
