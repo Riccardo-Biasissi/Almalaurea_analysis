@@ -19,6 +19,10 @@ def main():
     plt.rcParams.update({'font.size': 15})
     os.makedirs(PLOTS_DIR, exist_ok=True)
 
+    # # Scrape data from AlmaLaurea and save to CSV files. Comment out if not needed.
+    # collect_data()
+    # collect_profile_data()
+
     df = pd.read_csv(os.path.join(DATA_DIR, 'almalaurea.csv'))
 
     plot_graduate_share(df, PLOTS_DIR)
