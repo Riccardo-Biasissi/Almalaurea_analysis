@@ -26,8 +26,8 @@ def main():
     plot_pay_gap(df, PLOTS_DIR)
     plot_unemployment(df, PLOTS_DIR)
 
-    # Requires live HTTP access to AlmaLaurea — uncomment to regenerate:
-    # plot_gender_split(PLOTS_DIR)
+    df_profilo = pd.read_csv(os.path.join(DATA_DIR, 'almalaurea_profilo.csv'))
+    plot_gender_split(df_profilo, PLOTS_DIR)
 
 
 def collect_data():
@@ -66,6 +66,30 @@ def collect_data():
     ]
     df = pd.DataFrame(data, columns=columns)
     df.to_csv(os.path.join(DATA_DIR, 'almalaurea.csv'), index=False)
+    print(df)
+
+
+def collect_profile_data():
+    """Scrape graduate profile data from AlmaLaurea and save to data/almalaurea_profilo.csv."""
+    from tqdm import tqdm
+    from almalaurea.scraper import fetch_profile
+
+    G = ['tutti'] + [str(i) for i in range(1, 16)]
+
+    data = []
+    with tqdm(total=len(G)) as pbar:
+        for g in G:
+            result = fetch_profile('tutti', 'tutti', g)
+            pct_maschi, pct_femmine, anni, gruppo_nome = (
+                result[1], result[2], result[4], result[8]
+            )
+            for anno, m, f in zip(anni, pct_maschi, pct_femmine):
+                data.append([g, int(anno), float(m), float(f), gruppo_nome])
+            pbar.update(1)
+
+    columns = ['gruppo_id', 'anno', 'percentuale_maschi', 'percentuale_femmine', 'gruppo_nome']
+    df = pd.DataFrame(data, columns=columns)
+    df.to_csv(os.path.join(DATA_DIR, 'almalaurea_profilo.csv'), index=False)
     print(df)
 
 

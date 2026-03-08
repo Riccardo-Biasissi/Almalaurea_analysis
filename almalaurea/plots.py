@@ -1,23 +1,23 @@
 import os
 import numpy as np
 import matplotlib.pyplot as plt
-from tqdm import tqdm
 
 from almalaurea.constants import GRUPPO_ID, AREA_NOME, AREA_GRUPPI
 
 
-def plot_gender_split(out_dir):
+def plot_gender_split(df, out_dir):
     """Plot male/female graduate percentages by discipline group.
 
-    Requires live HTTP access to AlmaLaurea. Produces M_VS_F.png.
+    Reads from a pre-loaded almalaurea_profilo.csv dataframe. Produces M_VS_F.png.
 
     Parameters
     ----------
+    df : pandas.DataFrame
+        Pre-loaded almalaurea_profilo.csv data with columns:
+        gruppo_id, anno, percentuale_maschi, percentuale_femmine, gruppo_nome.
     out_dir : str
         Directory where the output PNG will be saved.
     """
-    from almalaurea.scraper import fetch_profile
-
     fig, ax = plt.subplots(4, 4, sharex=True, sharey=True, figsize=(24, 20))
 
     fig.suptitle(
@@ -28,17 +28,22 @@ def plot_gender_split(out_dir):
     fig.supxlabel('Anno', y=0.08)
     fig.supylabel('Percentuale sul totale [%]', x=0.07)
 
-    area_ID   = ['1', '2', '4', '3']
     area_nome = ['ALE', 'EGS', 'STEM', 'SAV']
 
-    for z in tqdm(range(1, 16)):
+    df_tot = df[df['gruppo_id'] == 'tutti'].sort_values('anno')
+    M_tot_last = df_tot['percentuale_maschi'].values[-1]
+    F_tot_last = df_tot['percentuale_femmine'].values[-1]
+
+    for z in range(1, 16):
         z_str = str(z)
-        data = fetch_profile('tutti', 'tutti', z_str)
-        M, F, anni = data[1], data[2], data[4]
-        anni = [int(a) for a in anni]
+        df_g = df[df['gruppo_id'] == z_str].sort_values('anno')
+        anni = df_g['anno'].tolist()
+        M = df_g['percentuale_maschi'].values
+        F = df_g['percentuale_femmine'].values
+        gruppo_nome = df_g['gruppo_nome'].iloc[0]
 
         row, col = (z - 1) // 4, (z - 1) % 4
-        title = 'Gruppo ' + data[8]
+        title = 'Gruppo ' + gruppo_nome
         if len(title) >= 35:
             title = title.replace(' e ', ' e\n')
         ax[row][col].set_title(title)
@@ -48,16 +53,14 @@ def plot_gender_split(out_dir):
         ax[row][col].grid()
 
         if col == 0:
-            data_area = fetch_profile('tutti', 'tutti', 'tutti')
-            M_a, F_a = data_area[1], data_area[2]
             ax[row][col].set_ylabel(
-                f"{area_nome[row]} - M: {round(M_a[-1], 1)}% - F: {round(F_a[-1], 1)}%"
+                f"{area_nome[row]} - M: {round(M_tot_last, 1)}% - F: {round(F_tot_last, 1)}%"
             )
 
     # Last panel: totals
-    data = fetch_profile('tutti', 'tutti', 'tutti')
-    M, F, anni = data[1], data[2], data[4]
-    anni = [int(a) for a in anni]
+    anni = df_tot['anno'].tolist()
+    M = df_tot['percentuale_maschi'].values
+    F = df_tot['percentuale_femmine'].values
 
     ax[3][3].set_title(f'Totale - M: {round(M[-1], 1)}% - F: {round(F[-1], 1)}%')
     ax[3][3].plot(anni, M, color='royalblue', marker='o', lw=2, label='Maschi')
