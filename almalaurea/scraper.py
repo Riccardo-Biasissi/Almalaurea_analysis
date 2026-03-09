@@ -96,6 +96,15 @@ def fetch_profile(university_id, area_id, gruppo_id):
         vals = re.findall(r"<td class='dato'>(.*)</td>", m[0])
         return np.array([_parse_cell(v, 'float') for v in vals], float)
 
+    def _sub_bold(section, start, end=None):
+        """Like _sub but reads datobold cells (used for aggregate diploma rows)."""
+        pat = rf"{start}([\s\S]*?){end}" if end else rf"{start}([\s\S]*)"
+        m = re.findall(pat, section)
+        if not m:
+            return np.array([np.nan])
+        vals = re.findall(r"<td class='datobold'>(.*)</td>", m[0])
+        return np.array([_parse_cell(v, 'float') for v in vals], float)
+
     t_eta = re.findall(
         r"Età alla laurea \(%\)([\s\S]*?)Età alla laurea \(medie", text
     )
@@ -135,17 +144,17 @@ def fetch_profile(university_id, area_id, gruppo_id):
     # "Voto di diploma (medie, in 100-mi)" is a separate row after the section.
     t_dip = re.findall(r"Diploma \(%\)([\s\S]*?)Voto di diploma", text)
     if t_dip:
-        dip_liceale     = _sub(t_dip[0], r"Liceale",              r"Liceo classico")
-        dip_classico    = _sub(t_dip[0], r"Liceo classico",        r"Liceo linguistico")
-        dip_linguistico = _sub(t_dip[0], r"Liceo linguistico",     r"Liceo scientifico")
-        dip_scientifico = _sub(t_dip[0], r"Liceo scientifico",     r"Liceo delle scienze")
-        dip_sc_umane    = _sub(t_dip[0], r"Liceo delle scienze",   r"Liceo artistico")
-        dip_artistico   = _sub(t_dip[0], r"Liceo artistico",       r"Tecnico")
-        dip_tecnico     = _sub(t_dip[0], r"Tecnico",               r"Tecnico economico")
-        dip_tec_eco     = _sub(t_dip[0], r"Tecnico economico",     r"Tecnico tecnologico")
-        dip_tec_tec     = _sub(t_dip[0], r"Tecnico tecnologico",   r"Professionale")
-        dip_prof        = _sub(t_dip[0], r"Professionale",         r"Titolo estero")
-        dip_estero      = _sub(t_dip[0], r"Titolo estero",         None)
+        dip_liceale     = _sub_bold(t_dip[0], r"Liceale",              r"Liceo classico")
+        dip_classico    = _sub(t_dip[0],     r"Liceo classico",        r"Liceo linguistico")
+        dip_linguistico = _sub(t_dip[0],     r"Liceo linguistico",     r"Liceo scientifico")
+        dip_scientifico = _sub(t_dip[0],     r"Liceo scientifico",     r"Liceo delle scienze")
+        dip_sc_umane    = _sub(t_dip[0],     r"Liceo delle scienze",   r"Liceo artistico")
+        dip_artistico   = _sub(t_dip[0],     r"Liceo artistico",       r"Tecnico")
+        dip_tecnico     = _sub_bold(t_dip[0], r"Tecnico",              r"Tecnico economico")
+        dip_tec_eco     = _sub(t_dip[0],     r"Tecnico economico",     r"Tecnico tecnologico")
+        dip_tec_tec     = _sub(t_dip[0],     r"Tecnico tecnologico",   r"Professionale")
+        dip_prof        = _sub_bold(t_dip[0], r"Professionale",        r"Titolo estero")
+        dip_estero      = _sub_bold(t_dip[0], r"Titolo estero",        None)
     else:
         empty = np.array([np.nan])
         dip_liceale = dip_classico = dip_linguistico = dip_scientifico = empty

@@ -39,6 +39,15 @@ def _sub(section, start, end=None):
     return [_parse_cell(v, 'float') for v in vals]
 
 
+def _sub_bold(section, start, end=None):
+    pat = rf"{start}([\s\S]*?){end}" if end else rf"{start}([\s\S]*)"
+    m = re.findall(pat, section)
+    if not m:
+        return None
+    vals = re.findall(r"<td class='datobold'>(.*)</td>", m[0])
+    return [_parse_cell(v, 'float') for v in vals]
+
+
 def main():
     print(f"Fetching: {URL}\n")
     text = requests.get(URL, timeout=15).text
@@ -103,6 +112,36 @@ def main():
                 print(f"  {label:26s}  [ERROR] sub-pattern '{start}' not found")
             else:
                 print(f"  {label:26s}  {vals}")
+
+    # ------------------------------------------------------------------ #
+    # Diploma (%)                                                          #
+    # ------------------------------------------------------------------ #
+    print()
+    print("=" * 60)
+    print("DIPLOMA (%)")
+    print("=" * 60)
+    t_dip = re.findall(r"Diploma \(%\)([\s\S]*?)Voto di diploma", text)
+    if not t_dip:
+        print("  [ERROR] Section not found")
+    else:
+        for label, fn, start, end in [
+            ("Liceale",          _sub_bold, r"Liceale",              r"Liceo classico"),
+            ("Liceo classico",   _sub,      r"Liceo classico",        r"Liceo linguistico"),
+            ("Liceo linguistico",_sub,      r"Liceo linguistico",     r"Liceo scientifico"),
+            ("Liceo scientifico",_sub,      r"Liceo scientifico",     r"Liceo delle scienze"),
+            ("Sc. umane",        _sub,      r"Liceo delle scienze",   r"Liceo artistico"),
+            ("Artistico",        _sub,      r"Liceo artistico",       r"Tecnico"),
+            ("Tecnico",          _sub_bold, r"Tecnico",               r"Tecnico economico"),
+            ("Tecnico economico",_sub,      r"Tecnico economico",     r"Tecnico tecnologico"),
+            ("Tecnico tecnol.",  _sub,      r"Tecnico tecnologico",   r"Professionale"),
+            ("Professionale",    _sub_bold, r"Professionale",         r"Titolo estero"),
+            ("Titolo estero",    _sub_bold, r"Titolo estero",         None),
+        ]:
+            vals = fn(t_dip[0], start, end)
+            if vals is None:
+                print(f"  {label:22s}  [ERROR] not found")
+            else:
+                print(f"  {label:22s}  {vals}")
 
     # ------------------------------------------------------------------ #
     # Sanity check — existing patterns                                     #
