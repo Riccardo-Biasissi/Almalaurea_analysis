@@ -43,6 +43,11 @@ def main():
     print(f"Fetching: {URL}\n")
     text = requests.get(URL, timeout=15).text
 
+    html_path = "profilo_raw.txt"
+    with open(html_path, "w", encoding="utf-8") as f:
+        f.write(text)
+    print(f"Raw HTML saved to: {html_path}\n")
+
     # ------------------------------------------------------------------ #
     # Età alla laurea (%)                                                  #
     # ------------------------------------------------------------------ #
