@@ -27,6 +27,8 @@ GRUPPO = {
 
 GRUPPO_ID = {v: k for k, v in GRUPPO.items()}
 
+PALETTE = ['royalblue', 'deeppink', 'forestgreen', 'crimson', 'purple']
+
 AREA_NOME = ['ALE', 'EGS', 'STEM', 'SAV']
 
 # Maps subplot row index to the discipline group IDs belonging to that area

@@ -10,7 +10,7 @@ def _parse_cell(value, mode):
     mode='float' — replace decimal comma ',' with '.'
     Returns np.nan for empty cells ('&nbsp;'), 0.0 for dash ('-').
     """
-    if value == '&nbsp;':
+    if value in ('&nbsp;', '/'):
         return np.nan
     if value == '-':
         return 0.0
@@ -36,8 +36,12 @@ def fetch_profile(university_id, area_id, gruppo_id):
     Returns
     -------
     list : [num_laureati, pct_maschi, pct_femmine, voto_laurea,
-            anni, ateneo, facolta, area, gruppo]
+            anni, ateneo, facolta, area, gruppo,
+            eta_meno23, eta_23_24, eta_25_26, eta_27_oltre,
+            cs_elevata, cs_media_imp, cs_media_aut, cs_lavoro_es]
         Arrays are numpy arrays over years; metadata strings are None on failure.
+        Indices 9-12:  Età alla laurea (%) — <23, 23-24, 25-26, 27+.
+        Indices 13-16: Classe sociale (%) — elevata, media imp., media aut., lavoro esec.
     """
     url = (
         "https://www2.almalaurea.it/cgi-php/universita/statistiche/visualizza.php"
@@ -81,8 +85,50 @@ def fetch_profile(university_id, area_id, gruppo_id):
         r"Voto di laurea([\s\S]*?)Regolarità negli studi"
     )
 
+    # --- Età alla laurea (%) ---
+    # Sub-rows: "Meno di 23 anni", "23-24 anni", "25-26 anni", "27 anni e oltre"
+    # Section bounded by the "(medie, in anni)" row that immediately follows
+    def _sub(section, start, end=None):
+        pat = rf"{start}([\s\S]*?){end}" if end else rf"{start}([\s\S]*)"
+        m = re.findall(pat, section)
+        if not m:
+            return np.array([np.nan])
+        vals = re.findall(r"<td class='dato'>(.*)</td>", m[0])
+        return np.array([_parse_cell(v, 'float') for v in vals], float)
+
+    t_eta = re.findall(
+        r"Età alla laurea \(%\)([\s\S]*?)Età alla laurea \(medie", text
+    )
+    if t_eta:
+        eta_meno23   = _sub(t_eta[0], r"Meno di 23",  r"23-24")
+        eta_23_24    = _sub(t_eta[0], r"23-24",        r"25-26")
+        eta_25_26    = _sub(t_eta[0], r"25-26",        r"27 anni")
+        eta_27_oltre = _sub(t_eta[0], r"27 anni",      None)
+    else:
+        empty = np.array([np.nan])
+        eta_meno23 = eta_23_24 = eta_25_26 = eta_27_oltre = empty
+
+    # --- Classe sociale (%) ---
+    # Sub-rows: "Classe elevata", "Classe media impiegatizia",
+    #           "Classe media autonoma", "Classe del lavoro esecutivo"
+    # Section is the last block in table dati3; end anchor is "Diploma (%)"
+    # which opens the next HTML table (dati4, secondary education)
+    t_cs = re.findall(
+        r"Classe sociale \(%\)([\s\S]*?)Diploma \(%\)", text
+    )
+    if t_cs:
+        cs_elevata   = _sub(t_cs[0], r"Classe elevata",            r"Classe media impiegatizia")
+        cs_media_imp = _sub(t_cs[0], r"Classe media impiegatizia", r"Classe media autonoma")
+        cs_media_aut = _sub(t_cs[0], r"Classe media autonoma",     r"Classe del lavoro")
+        cs_lavoro_es = _sub(t_cs[0], r"Classe del lavoro",         None)
+    else:
+        empty = np.array([np.nan])
+        cs_elevata = cs_media_imp = cs_media_aut = cs_lavoro_es = empty
+
     return [num_laureati, pct_maschi, pct_femmine, voto_laurea,
-            anni, ateneo, facolta, area, gruppo]
+            anni, ateneo, facolta, area, gruppo,
+            eta_meno23, eta_23_24, eta_25_26, eta_27_oltre,
+            cs_elevata, cs_media_imp, cs_media_aut, cs_lavoro_es]
 
 
 def fetch_employment(university_id, survey_year, area_id, gruppo_id,

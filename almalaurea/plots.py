@@ -2,7 +2,7 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 
-from almalaurea.constants import GRUPPO_ID, AREA_NOME, AREA_GRUPPI
+from almalaurea.constants import GRUPPO_ID, AREA_NOME, AREA_GRUPPI, PALETTE
 
 
 def plot_gender_split(df, out_dir):
@@ -47,8 +47,8 @@ def plot_gender_split(df, out_dir):
         if len(title) >= 35:
             title = title.replace(' e ', ' e\n')
         ax[row][col].set_title(title)
-        ax[row][col].plot(anni, M, color='royalblue', marker='o', lw=1.5, label='Maschi')
-        ax[row][col].plot(anni, F, color='deeppink',  marker='o', lw=1.5, label='Femmine')
+        ax[row][col].plot(anni, M, color=PALETTE[0], marker='o', lw=1.5, label='Maschi')
+        ax[row][col].plot(anni, F, color=PALETTE[1], marker='o', lw=1.5, label='Femmine')
         ax[row][col].plot([anni[0], anni[-1]], [50, 50], c='black', ls='dashed', lw=1.5)
         ax[row][col].grid()
 
@@ -63,8 +63,8 @@ def plot_gender_split(df, out_dir):
     F = df_tot['percentuale_femmine'].values
 
     ax[3][3].set_title(f'Totale - M: {round(M[-1], 1)}% - F: {round(F[-1], 1)}%')
-    ax[3][3].plot(anni, M, color='royalblue', marker='o', lw=2, label='Maschi')
-    ax[3][3].plot(anni, F, color='deeppink',  marker='o', lw=2, label='Femmine')
+    ax[3][3].plot(anni, M, color=PALETTE[0], marker='o', lw=2, label='Maschi')
+    ax[3][3].plot(anni, F, color=PALETTE[1], marker='o', lw=2, label='Femmine')
     ax[3][3].plot([anni[0], anni[-1]], [50, 50], c='black', ls='dashed', lw=1.5)
     ax[3][3].annotate(
         'Source: AlmaLaurea\n\nElaboration by\nBiasissi Riccardo',
@@ -112,8 +112,8 @@ def plot_salary_by_group(df, out_dir):
             F = df_t['retribuzione_mensile_femmine']
             T = df_t['retribuzione_mensile']
 
-            ax[row][col].plot(df_t['anno'], M, color='royalblue', marker='o', lw=1.5, label='Maschi')
-            ax[row][col].plot(df_t['anno'], F, color='deeppink',  marker='o', lw=1.5, label='Femmine')
+            ax[row][col].plot(df_t['anno'], M, color=PALETTE[0], marker='o', lw=1.5, label='Maschi')
+            ax[row][col].plot(df_t['anno'], F, color=PALETTE[1], marker='o', lw=1.5, label='Femmine')
             ax[row][col].plot(df_t['anno'], T, color='black',     marker='o', lw=1.5, label='Totale')
             ax[row][col].grid()
 
@@ -124,9 +124,9 @@ def plot_salary_by_group(df, out_dir):
         T = df_t['retribuzione_mensile']
 
         ax[3][3].set_title('Totale')
-        ax[3][3].plot(df_t['anno'], M, color='royalblue', marker='o', lw=2, label='Maschi')
-        ax[3][3].plot(df_t['anno'], F, color='deeppink',  marker='o', lw=2, label='Femmine')
-        ax[3][3].plot(df_t['anno'], T, color='black',     marker='o', lw=2, label='Totale')
+        ax[3][3].plot(df_t['anno'], M, color=PALETTE[0], marker='o', lw=2, label='Maschi')
+        ax[3][3].plot(df_t['anno'], F, color=PALETTE[1], marker='o', lw=2, label='Femmine')
+        ax[3][3].plot(df_t['anno'], T, color='black',    marker='o', lw=2, label='Totale')
         ax[3][3].grid()
         ax[3][3].legend()
         ax[2][3].annotate(
@@ -166,7 +166,7 @@ def plot_pay_gap(df, out_dir):
     fig.supylabel('Divario retributivo [%]', x=0.08)
 
     groups = [str(i) for i in range(1, 16)] + ['tutti']
-    colors = ['royalblue', 'deeppink', 'darkgreen']
+    colors = PALETTE[:3]
     labels = ['1 anno', '3 anni', '5 anni']
 
     for idx, g in enumerate(groups):
@@ -222,7 +222,7 @@ def plot_unemployment(df, out_dir):
     fig.supylabel('Tasso di disoccupazione [%]', x=0.08)
 
     groups = [str(i) for i in range(1, 16)] + ['tutti']
-    colors = ['royalblue', 'deeppink', 'darkgreen']
+    colors = PALETTE[:3]
     labels = ['1 anno', '3 anni', '5 anni']
 
     for idx, g in enumerate(groups):
@@ -335,4 +335,143 @@ def plot_graduate_share(df, out_dir):
         os.path.join(out_dir, 'numero_laureati_percentuale.png'),
         dpi=200, bbox_inches='tight',
     )
+    plt.close()
+
+
+def plot_eta_laurea(df, out_dir):
+    """Plot age-at-graduation distribution (%) by discipline group over time.
+
+    Produces eta_laurea.png.
+
+    Parameters
+    ----------
+    df : pandas.DataFrame
+        Pre-loaded almalaurea_profilo.csv data with columns:
+        gruppo_id, anno, eta_meno23, eta_23_24, eta_25_26, eta_27_oltre, gruppo_nome.
+    out_dir : str
+        Directory where the output PNG will be saved.
+    """
+    BANDS = [
+        ('eta_meno23',   '<23 anni',   PALETTE[0]),
+        ('eta_23_24',    '23-24 anni', PALETTE[1]),
+        ('eta_25_26',    '25-26 anni', PALETTE[2]),
+        ('eta_27_oltre', '27+ anni',   PALETTE[3]),
+    ]
+
+    fig, ax = plt.subplots(4, 4, sharex=True, figsize=(24, 20))
+
+    fig.suptitle(
+        'Distribuzione età alla laurea (%) per gruppo disciplinare'
+        ' (classificazione MUR 2020)',
+        y=0.92,
+    )
+    fig.supxlabel('Anno di laurea', y=0.08)
+    fig.supylabel('Percentuale [%]', x=0.07)
+
+    area_nome = ['ALE', 'EGS', 'STEM', 'SAV']
+
+    groups = [str(i) for i in range(1, 16)] + ['tutti']
+
+    for idx, g in enumerate(groups):
+        row, col = idx // 4, idx % 4
+        df_g = df[df['gruppo_id'] == g].sort_values('anno')
+        anni = df_g['anno'].tolist()
+
+        if g != 'tutti':
+            title = 'Gruppo ' + GRUPPO_ID[g]
+            ax[row][col].set_title(title.replace(' e ', ' e\n'))
+            if col == 0:
+                ax[row][col].set_ylabel(area_nome[row])
+        else:
+            ax[row][col].set_title('Totale')
+            ax[row][col].annotate(
+                'Source: AlmaLaurea\n\nElaboration by\nBiasissi Riccardo',
+                xy=(0.03, 0.03), xytext=(0.03, 0.03), xycoords='axes fraction',
+                va='bottom', fontsize=15,
+            )
+
+        for col_name, label, color in BANDS:
+            ax[row][col].plot(
+                anni, df_g[col_name].values,
+                marker='o', lw=1.5, color=color, label=label,
+            )
+
+        if g == 'tutti':
+            ax[row][col].legend(loc='upper right', fontsize=11)
+
+        ax[row][col].set_ylim(0, 60)
+        ax[row][col].grid()
+
+    plt.subplots_adjust(wspace=0.12, hspace=0.24)
+    plt.savefig(os.path.join(out_dir, 'eta_laurea.png'), dpi=200, bbox_inches='tight')
+    plt.close()
+
+
+def plot_classe_sociale(df, out_dir):
+    """Plot social class of origin (%) by discipline group over time.
+
+    Produces classe_sociale.png.
+
+    Parameters
+    ----------
+    df : pandas.DataFrame
+        Pre-loaded almalaurea_profilo.csv data with columns:
+        gruppo_id, anno, cs_classe_elevata, cs_media_impiegatizia,
+        cs_media_autonoma, cs_lavoro_esecutivo, gruppo_nome.
+    out_dir : str
+        Directory where the output PNG will be saved.
+    """
+    BANDS = [
+        ('cs_classe_elevata',     'Classe elevata',    PALETTE[0]),
+        ('cs_media_impiegatizia', 'Classe media imp.', PALETTE[1]),
+        ('cs_media_autonoma',     'Classe media aut.', PALETTE[2]),
+        ('cs_lavoro_esecutivo',   'Lavoro esecutivo',  PALETTE[3]),
+    ]
+
+    fig, ax = plt.subplots(4, 4, sharex=True, figsize=(24, 20))
+
+    fig.suptitle(
+        'Distribuzione classe sociale di origine (%) per gruppo disciplinare'
+        ' (classificazione MUR 2020)',
+        y=0.92,
+    )
+    fig.supxlabel('Anno di laurea', y=0.08)
+    fig.supylabel('Percentuale [%]', x=0.07)
+
+    area_nome = ['ALE', 'EGS', 'STEM', 'SAV']
+
+    groups = [str(i) for i in range(1, 16)] + ['tutti']
+
+    for idx, g in enumerate(groups):
+        row, col = idx // 4, idx % 4
+        df_g = df[df['gruppo_id'] == g].sort_values('anno')
+        anni = df_g['anno'].tolist()
+
+        if g != 'tutti':
+            title = 'Gruppo ' + GRUPPO_ID[g]
+            ax[row][col].set_title(title.replace(' e ', ' e\n'))
+            if col == 0:
+                ax[row][col].set_ylabel(area_nome[row])
+        else:
+            ax[row][col].set_title('Totale')
+            ax[row][col].annotate(
+                'Source: AlmaLaurea\n\nElaboration by\nBiasissi Riccardo',
+                xy=(0.03, 0.03), xytext=(0.03, 0.03), xycoords='axes fraction',
+                va='bottom', fontsize=15,
+            )
+
+        for col_name, label, color in BANDS:
+            ax[row][col].plot(
+                anni, df_g[col_name].values,
+                marker='o', lw=1.5, color=color, label=label,
+            )
+
+        if g == 'tutti':
+            ax[row][col].legend(loc='upper right', fontsize=11)
+
+        ax[row][col].set_ylim(0, 50)
+        ax[row][col].grid()
+
+    plt.subplots_adjust(wspace=0.12, hspace=0.24)
+    plt.savefig(os.path.join(out_dir, 'classe_sociale.png'), dpi=200, bbox_inches='tight')
     plt.close()
