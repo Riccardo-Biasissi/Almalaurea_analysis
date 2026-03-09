@@ -50,65 +50,71 @@ def main():
 
     # ------------------------------------------------------------------ #
     # Età alla laurea (%)                                                  #
+    # Bands: Meno di 23 anni / 23-24 anni / 25-26 anni / 27 anni e oltre  #
     # ------------------------------------------------------------------ #
     print("=" * 60)
     print("ETA' ALLA LAUREA (%)")
     print("=" * 60)
-    t_eta = re.findall(r"Età alla laurea([\s\S]*?)Voto di laurea", text)
+    t_eta = re.findall(
+        r"Età alla laurea \(%\)([\s\S]*?)Età alla laurea \(medie", text
+    )
     if not t_eta:
-        print("  [ERROR] Section 'Età alla laurea' not found — check anchor.")
+        print("  [ERROR] Section not found — check outer anchors.")
     else:
         for label, start, end in [
-            ("Entro 23 anni", r"Entro 23",  r"24-26"),
-            ("24-26 anni",    r"24-26",     r"27-30"),
-            ("27-30 anni",    r"27-30",     r"31 "),
-            ("31 anni e oltre", r"31 ",     None),
+            ("Meno di 23 anni", r"Meno di 23",  r"23-24"),
+            ("23-24 anni",      r"23-24",        r"25-26"),
+            ("25-26 anni",      r"25-26",        r"27 anni"),
+            ("27 anni e oltre", r"27 anni",      None),
         ]:
             vals = _sub(t_eta[0], start, end)
             if vals is None:
-                print(f"  {label:25s}  [ERROR] sub-pattern '{start}' not found")
+                print(f"  {label:20s}  [ERROR] sub-pattern '{start}' not found")
             else:
-                print(f"  {label:25s}  {vals}")
+                print(f"  {label:20s}  {vals}")
 
     # ------------------------------------------------------------------ #
     # Classe sociale (%)                                                   #
+    # Bands: Classe elevata / Classe media impiegatizia /                  #
+    #        Classe media autonoma / Classe del lavoro esecutivo           #
     # ------------------------------------------------------------------ #
     print()
     print("=" * 60)
     print("CLASSE SOCIALE (%)")
     print("=" * 60)
-    t_cs = re.findall(r"Classe sociale([\s\S]*?)Titolo di studio", text)
+    t_cs = re.findall(
+        r"Classe sociale \(%\)([\s\S]*?)Diploma \(%\)", text
+    )
     if not t_cs:
-        print("  [ERROR] Section 'Classe sociale' not found — check anchor.")
-        # Print nearby HTML to help diagnose:
+        print("  [ERROR] Section not found — check outer anchors.")
         nearby = re.findall(r"Classe sociale([\s\S]{0,500})", text)
         if nearby:
             print("\n  --- HTML context after 'Classe sociale' ---")
             print(nearby[0])
     else:
         for label, start, end in [
-            ("Borghesia",              r"Borghesia",    r"Classe media"),
-            ("Classe media impieg.",   r"Classe media", r"Piccola"),
-            ("Piccola borghesia",      r"Piccola",      r"Classe operaia"),
-            ("Classe operaia",         r"Classe operaia", None),
+            ("Classe elevata",           r"Classe elevata",            r"Classe media impiegatizia"),
+            ("Classe media impieg.",     r"Classe media impiegatizia", r"Classe media autonoma"),
+            ("Classe media autonoma",    r"Classe media autonoma",     r"Classe del lavoro"),
+            ("Classe del lavoro esec.",  r"Classe del lavoro",         None),
         ]:
             vals = _sub(t_cs[0], start, end)
             if vals is None:
-                print(f"  {label:25s}  [ERROR] sub-pattern '{start}' not found")
+                print(f"  {label:26s}  [ERROR] sub-pattern '{start}' not found")
             else:
-                print(f"  {label:25s}  {vals}")
+                print(f"  {label:26s}  {vals}")
 
     # ------------------------------------------------------------------ #
-    # Quick sanity check on existing patterns (gender)                    #
+    # Sanity check — existing patterns                                     #
     # ------------------------------------------------------------------ #
     print()
     print("=" * 60)
-    print("SANITY CHECK — existing pattern (Uomini %)")
+    print("SANITY CHECK — existing patterns")
     print("=" * 60)
     t_m = re.findall(r"Uomini([\s\S]*?)Donne", text)
     if t_m:
         vals = re.findall(r"<td class='dato'>(.*)</td>", t_m[0])
-        print(f"  Uomini: {vals}")
+        print(f"  Uomini %: {vals}")
     else:
         print("  [ERROR] 'Uomini' pattern not found")
 

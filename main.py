@@ -83,30 +83,30 @@ def collect_profile_data():
             pct_maschi, pct_femmine, anni, gruppo_nome = (
                 result[1], result[2], result[4], result[8]
             )
-            eta_entro23, eta_24_26, eta_27_30, eta_31_oltre = (
+            eta_meno23, eta_23_24, eta_25_26, eta_27_oltre = (
                 result[9], result[10], result[11], result[12]
             )
-            cs_borghesia, cs_media_imp, cs_piccola_borg, cs_operaia = (
+            cs_elevata, cs_media_imp, cs_media_aut, cs_lavoro_es = (
                 result[13], result[14], result[15], result[16]
             )
             for i, (anno, m, f) in enumerate(zip(anni, pct_maschi, pct_femmine)):
                 data.append([
                     g, int(anno), float(m), float(f), gruppo_nome,
-                    float(eta_entro23[i])  if i < len(eta_entro23)  else float('nan'),
-                    float(eta_24_26[i])    if i < len(eta_24_26)    else float('nan'),
-                    float(eta_27_30[i])    if i < len(eta_27_30)    else float('nan'),
-                    float(eta_31_oltre[i]) if i < len(eta_31_oltre) else float('nan'),
-                    float(cs_borghesia[i])    if i < len(cs_borghesia)    else float('nan'),
-                    float(cs_media_imp[i])    if i < len(cs_media_imp)    else float('nan'),
-                    float(cs_piccola_borg[i]) if i < len(cs_piccola_borg) else float('nan'),
-                    float(cs_operaia[i])      if i < len(cs_operaia)      else float('nan'),
+                    float(eta_meno23[i])   if i < len(eta_meno23)   else float('nan'),
+                    float(eta_23_24[i])    if i < len(eta_23_24)    else float('nan'),
+                    float(eta_25_26[i])    if i < len(eta_25_26)    else float('nan'),
+                    float(eta_27_oltre[i]) if i < len(eta_27_oltre) else float('nan'),
+                    float(cs_elevata[i])   if i < len(cs_elevata)   else float('nan'),
+                    float(cs_media_imp[i]) if i < len(cs_media_imp) else float('nan'),
+                    float(cs_media_aut[i]) if i < len(cs_media_aut) else float('nan'),
+                    float(cs_lavoro_es[i]) if i < len(cs_lavoro_es) else float('nan'),
                 ])
             pbar.update(1)
 
     columns = [
         'gruppo_id', 'anno', 'percentuale_maschi', 'percentuale_femmine', 'gruppo_nome',
-        'eta_entro23', 'eta_24_26', 'eta_27_30', 'eta_31_oltre',
-        'cs_borghesia', 'cs_media_impiegatizia', 'cs_piccola_borghesia', 'cs_classe_operaia',
+        'eta_meno23', 'eta_23_24', 'eta_25_26', 'eta_27_oltre',
+        'cs_classe_elevata', 'cs_media_impiegatizia', 'cs_media_autonoma', 'cs_lavoro_esecutivo',
     ]
     df = pd.DataFrame(data, columns=columns)
     df.to_csv(os.path.join(DATA_DIR, 'almalaurea_profilo.csv'), index=False)
