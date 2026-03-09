@@ -508,58 +508,6 @@ def plot_diploma_tecnico_sub(df, out_dir):
     )
 
 
-def plot_voto_diploma(df, out_dir):
-    """Plot mean secondary-school grade (100-mi scale) by discipline group.
-
-    Produces voto_diploma.png.
-
-    Parameters
-    ----------
-    df : pandas.DataFrame
-        Pre-loaded almalaurea_profilo.csv.
-    out_dir : str
-        Directory where the output PNG will be saved.
-    """
-    fig, ax = plt.subplots(4, 4, sharex=True, sharey=True, figsize=(24, 20))
-
-    fig.suptitle(
-        'Voto di diploma medio (in 100-mi) per gruppo disciplinare'
-        ' (classificazione MUR 2020)',
-        y=0.92,
-    )
-    fig.supxlabel('Anno di laurea', y=0.08)
-    fig.supylabel('Voto di diploma (media, 100-mi)', x=0.07)
-
-    area_nome = ['ALE', 'EGS', 'STEM', 'SAV']
-    groups = [str(i) for i in range(1, 16)] + ['tutti']
-
-    for idx, g in enumerate(groups):
-        row, col = idx // 4, idx % 4
-        df_g = df[df['gruppo_id'] == g].sort_values('anno')
-        anni = df_g['anno'].tolist()
-
-        if g != 'tutti':
-            title = 'Gruppo ' + GRUPPO_ID[g]
-            ax[row][col].set_title(title.replace(' e ', ' e\n'))
-            if col == 0:
-                ax[row][col].set_ylabel(area_nome[row])
-        else:
-            ax[row][col].set_title('Totale')
-            ax[row][col].annotate(
-                'Source: AlmaLaurea\n\nElaboration by\nBiasissi Riccardo',
-                xy=(0.03, 0.03), xytext=(0.03, 0.03), xycoords='axes fraction',
-                va='bottom', fontsize=12,
-            )
-
-        ax[row][col].plot(anni, df_g['voto_diploma'].values,
-                          marker='o', lw=2, color='black')
-        ax[row][col].grid()
-
-    plt.subplots_adjust(wspace=0.10, hspace=0.26)
-    plt.savefig(os.path.join(out_dir, 'voto_diploma.png'), dpi=200, bbox_inches='tight')
-    plt.close()
-
-
 def plot_classe_sociale(df, out_dir):
     """Plot social class of origin (%) by discipline group over time.
 

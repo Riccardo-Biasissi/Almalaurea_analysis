@@ -14,7 +14,6 @@ from almalaurea.plots import (
     plot_diploma_aggregati,
     plot_diploma_liceale_sub,
     plot_diploma_tecnico_sub,
-    plot_voto_diploma,
 )
 
 DATA_DIR  = os.path.join(os.path.dirname(__file__), 'data')
@@ -43,7 +42,6 @@ def main():
     plot_diploma_aggregati(df_profilo, PLOTS_DIR)
     plot_diploma_liceale_sub(df_profilo, PLOTS_DIR)
     plot_diploma_tecnico_sub(df_profilo, PLOTS_DIR)
-    plot_voto_diploma(df_profilo, PLOTS_DIR)
 
 
 def collect_data():
@@ -111,8 +109,8 @@ def collect_profile_data():
             dip_sc_umane, dip_artistico, dip_tecnico, dip_tec_eco = (
                 result[21], result[22], result[23], result[24]
             )
-            dip_tec_tec, dip_prof, dip_estero, voto_diploma = (
-                result[25], result[26], result[27], result[28]
+            dip_tec_tec, dip_prof, dip_estero = (
+                result[25], result[26], result[27]
             )
 
             def _v(arr, i):
@@ -130,7 +128,7 @@ def collect_profile_data():
                     _v(dip_sc_umane, i), _v(dip_artistico, i),
                     _v(dip_tecnico, i), _v(dip_tec_eco, i),
                     _v(dip_tec_tec, i), _v(dip_prof, i),
-                    _v(dip_estero, i), _v(voto_diploma, i),
+                    _v(dip_estero, i),
                 ])
             pbar.update(1)
 
@@ -142,7 +140,6 @@ def collect_profile_data():
         'diploma_scienze_umane', 'diploma_artistico',
         'diploma_tecnico', 'diploma_tecnico_economico', 'diploma_tecnico_tecnologico',
         'diploma_professionale', 'diploma_titolo_estero',
-        'voto_diploma',
     ]
     df = pd.DataFrame(data, columns=columns)
     df.to_csv(os.path.join(DATA_DIR, 'almalaurea_profilo.csv'), index=False)

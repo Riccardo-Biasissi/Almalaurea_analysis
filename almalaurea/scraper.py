@@ -161,20 +161,13 @@ def fetch_profile(university_id, area_id, gruppo_id):
         dip_sc_umane = dip_artistico = dip_tecnico = dip_tec_eco = empty
         dip_tec_tec = dip_prof = dip_estero = empty
 
-    # Voto di diploma: last row, extracted from everything after "Diploma (%)"
-    t_dip_ext = re.findall(r"Diploma \(%\)([\s\S]*)", text)
-    if t_dip_ext:
-        voto_diploma = _sub(t_dip_ext[0], r"Voto di diploma \(medie", None)
-    else:
-        voto_diploma = np.array([np.nan])
-
     return [num_laureati, pct_maschi, pct_femmine, voto_laurea,
             anni, ateneo, facolta, area, gruppo,
             eta_meno23, eta_23_24, eta_25_26, eta_27_oltre,
             cs_elevata, cs_media_imp, cs_media_aut, cs_lavoro_es,
             dip_liceale, dip_classico, dip_linguistico, dip_scientifico,
             dip_sc_umane, dip_artistico, dip_tecnico, dip_tec_eco,
-            dip_tec_tec, dip_prof, dip_estero, voto_diploma]
+            dip_tec_tec, dip_prof, dip_estero]
 
 
 def fetch_employment(university_id, survey_year, area_id, gruppo_id,
