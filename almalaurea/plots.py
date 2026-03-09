@@ -397,7 +397,7 @@ def plot_eta_laurea(df, out_dir):
             )
 
         if g == 'tutti':
-            ax[row][col].legend(loc='upper right', fontsize=11)
+            ax[row][col].legend(loc='upper right', ncols=2)
 
         ax[row][col].set_ylim(0, 60)
         ax[row][col].grid()
@@ -422,10 +422,10 @@ def plot_classe_sociale(df, out_dir):
         Directory where the output PNG will be saved.
     """
     BANDS = [
-        ('cs_classe_elevata',     'Classe elevata',    PALETTE[0]),
-        ('cs_media_impiegatizia', 'Classe media imp.', PALETTE[1]),
-        ('cs_media_autonoma',     'Classe media aut.', PALETTE[2]),
-        ('cs_lavoro_esecutivo',   'Lavoro esecutivo',  PALETTE[3]),
+        ('cs_classe_elevata',     'Elevata',    PALETTE[0]),
+        ('cs_media_impiegatizia', 'Media imp.', PALETTE[1]),
+        ('cs_media_autonoma',     'Media aut.', PALETTE[2]),
+        ('cs_lavoro_esecutivo',   'Esecutivo',  PALETTE[3]),
     ]
 
     fig, ax = plt.subplots(4, 4, sharex=True, figsize=(24, 20))
@@ -467,7 +467,7 @@ def plot_classe_sociale(df, out_dir):
             )
 
         if g == 'tutti':
-            ax[row][col].legend(loc='upper right', fontsize=11)
+            ax[row][col].legend(loc='upper right', ncols=2)
 
         ax[row][col].set_ylim(0, 50)
         ax[row][col].grid()
