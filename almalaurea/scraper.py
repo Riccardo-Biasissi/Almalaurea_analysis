@@ -10,7 +10,7 @@ def _parse_cell(value, mode):
     mode='float' — replace decimal comma ',' with '.'
     Returns np.nan for empty cells ('&nbsp;'), 0.0 for dash ('-').
     """
-    if value == '&nbsp;':
+    if value in ('&nbsp;', '/'):
         return np.nan
     if value == '-':
         return 0.0
