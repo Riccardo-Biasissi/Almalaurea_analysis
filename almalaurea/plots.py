@@ -442,7 +442,7 @@ def _plot_diploma_grid(df, bands, title, filename, out_dir):
             )
 
         if g == 'tutti':
-            ax[row][col].legend(loc='upper right', ncols=2, fontsize=10)
+            ax[3][3].legend(loc=['center right' if len(bands) > 2 else 'lower right'][0], ncols=[2 if len(bands) > 2 else 1][0], fontsize=[12 if len(bands) > 2 else 16][0])
 
         ax[row][col].set_ylim(0, None)
         ax[row][col].grid()
