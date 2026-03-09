@@ -26,7 +26,7 @@ def plot_gender_split(df, out_dir):
         y=0.92,
     )
     fig.supxlabel('Anno', y=0.08)
-    fig.supylabel('Percentuale sul totale [%]', x=0.07)
+    fig.supylabel('Frazione di laureati sul totale gruppo disciplinare [%]', x=0.07)
 
     area_nome = ['ALE', 'EGS', 'STEM', 'SAV']
 
@@ -69,7 +69,7 @@ def plot_gender_split(df, out_dir):
     ax[3][3].annotate(
         'Source: AlmaLaurea\n\nElaboration by\nBiasissi Riccardo',
         xy=(0.03, 0.03), xytext=(0.03, 0.03), xycoords='axes fraction',
-        va='bottom', fontsize=15,
+        va='bottom', fontsize=12,
     )
     ax[3][3].legend()
     ax[3][3].grid()
@@ -191,7 +191,7 @@ def plot_pay_gap(df, out_dir):
             ax[row][col].annotate(
                 'Source: AlmaLaurea\n\nElaboration by\nBiasissi Riccardo',
                 xy=(0.03, 0.03), xytext=(0.03, 0.03), xycoords='axes fraction',
-                va='bottom', fontsize=15,
+                va='bottom', fontsize=12,
             )
 
     plt.subplots_adjust(wspace=0.08, hspace=0.24)
@@ -366,7 +366,7 @@ def plot_eta_laurea(df, out_dir):
         y=0.92,
     )
     fig.supxlabel('Anno di laurea', y=0.08)
-    fig.supylabel('Percentuale [%]', x=0.07)
+    fig.supylabel('Frazione di laureati [%]', x=0.07)
 
     area_nome = ['ALE', 'EGS', 'STEM', 'SAV']
 
@@ -384,10 +384,10 @@ def plot_eta_laurea(df, out_dir):
                 ax[row][col].set_ylabel(area_nome[row])
         else:
             ax[row][col].set_title('Totale')
-            ax[row][col].annotate(
+            ax[2][3].annotate(
                 'Source: AlmaLaurea\n\nElaboration by\nBiasissi Riccardo',
                 xy=(0.03, 0.03), xytext=(0.03, 0.03), xycoords='axes fraction',
-                va='bottom', fontsize=15,
+                va='bottom', fontsize=12,
             )
 
         for col_name, label, color in BANDS:
@@ -436,7 +436,7 @@ def plot_classe_sociale(df, out_dir):
         y=0.92,
     )
     fig.supxlabel('Anno di laurea', y=0.08)
-    fig.supylabel('Percentuale [%]', x=0.07)
+    fig.supylabel('Frazione di laureati [%]', x=0.07)
 
     area_nome = ['ALE', 'EGS', 'STEM', 'SAV']
 
@@ -457,7 +457,7 @@ def plot_classe_sociale(df, out_dir):
             ax[row][col].annotate(
                 'Source: AlmaLaurea\n\nElaboration by\nBiasissi Riccardo',
                 xy=(0.03, 0.03), xytext=(0.03, 0.03), xycoords='axes fraction',
-                va='bottom', fontsize=15,
+                va='bottom', fontsize=12,
             )
 
         for col_name, label, color in BANDS:
@@ -475,3 +475,4 @@ def plot_classe_sociale(df, out_dir):
     plt.subplots_adjust(wspace=0.12, hspace=0.24)
     plt.savefig(os.path.join(out_dir, 'classe_sociale.png'), dpi=200, bbox_inches='tight')
     plt.close()
+
