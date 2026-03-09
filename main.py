@@ -23,7 +23,7 @@ def main():
 
     # # Scrape data from AlmaLaurea and save to CSV files. Comment out if not needed.
     # collect_data()
-    # collect_profile_data()
+    collect_profile_data()
 
     df = pd.read_csv(os.path.join(DATA_DIR, 'almalaurea.csv'))
 
