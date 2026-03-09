@@ -9,6 +9,8 @@ from almalaurea.plots import (
     plot_pay_gap,
     plot_unemployment,
     plot_gender_split,
+    plot_eta_laurea,
+    plot_classe_sociale,
 )
 
 DATA_DIR  = os.path.join(os.path.dirname(__file__), 'data')
@@ -28,6 +30,8 @@ def main():
 
     df_profilo = pd.read_csv(os.path.join(DATA_DIR, 'almalaurea_profilo.csv'))
     plot_gender_split(df_profilo, PLOTS_DIR)
+    plot_eta_laurea(df_profilo, PLOTS_DIR)
+    plot_classe_sociale(df_profilo, PLOTS_DIR)
 
 
 def collect_data():

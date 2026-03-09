@@ -5,4 +5,6 @@ from almalaurea.plots import (
     plot_pay_gap,
     plot_unemployment,
     plot_graduate_share,
+    plot_eta_laurea,
+    plot_classe_sociale,
 )
