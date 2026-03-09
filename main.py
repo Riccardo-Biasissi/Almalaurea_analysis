@@ -11,7 +11,9 @@ from almalaurea.plots import (
     plot_gender_split,
     plot_eta_laurea,
     plot_classe_sociale,
-    plot_diploma_tipo,
+    plot_diploma_aggregati,
+    plot_diploma_liceale_sub,
+    plot_diploma_tecnico_sub,
     plot_voto_diploma,
 )
 
@@ -38,7 +40,9 @@ def main():
     plot_gender_split(df_profilo, PLOTS_DIR)
     plot_eta_laurea(df_profilo, PLOTS_DIR)
     plot_classe_sociale(df_profilo, PLOTS_DIR)
-    plot_diploma_tipo(df_profilo, PLOTS_DIR)
+    plot_diploma_aggregati(df_profilo, PLOTS_DIR)
+    plot_diploma_liceale_sub(df_profilo, PLOTS_DIR)
+    plot_diploma_tecnico_sub(df_profilo, PLOTS_DIR)
     plot_voto_diploma(df_profilo, PLOTS_DIR)
 
 

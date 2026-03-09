@@ -407,52 +407,11 @@ def plot_eta_laurea(df, out_dir):
     plt.close()
 
 
-def plot_diploma_tipo(df, out_dir):
-    """Plot secondary-school diploma type distribution (%) by discipline group.
-
-    Produces diploma_tipo.png.
-
-    Solid lines (with markers) for the three aggregates:
-      diploma_liceale, diploma_tecnico, diploma_professionale.
-    Dashed lines for diploma_titolo_estero and the Tecnico sub-categories.
-    Dashed lines with distinct colours for the five Liceale sub-categories.
-
-    Parameters
-    ----------
-    df : pandas.DataFrame
-        Pre-loaded almalaurea_profilo.csv.
-    out_dir : str
-        Directory where the output PNG will be saved.
-    """
-    # (col_name, label, color, linestyle, linewidth, marker)
-    TOTALS = [
-        ('diploma_liceale',       'Liceale',        PALETTE[0], '-',  2.5, 'o'),
-        ('diploma_tecnico',       'Tecnico',         PALETTE[1], '-',  2.5, 'o'),
-        ('diploma_professionale', 'Professionale',   PALETTE[2], '-',  2.5, 'o'),
-        ('diploma_titolo_estero', 'Titolo estero',   PALETTE[3], '--', 1.5,  None),
-    ]
-    # Five Liceale sub-categories: distinct tab10-ish colours, all dashed
-    LICEALE_SUBS = [
-        ('diploma_classico',      'L. classico',     '#1f77b4', '--', 1.5, None),
-        ('diploma_linguistico',   'L. linguistico',  '#ff7f0e', '--', 1.5, None),
-        ('diploma_scientifico',   'L. scientifico',  '#2ca02c', '--', 1.5, None),
-        ('diploma_scienze_umane', 'L. sc. umane',    '#d62728', '--', 1.5, None),
-        ('diploma_artistico',     'L. artistico',    '#9467bd', '--', 1.5, None),
-    ]
-    # Two Tecnico sub-categories: same colour as Tecnico total, different dash
-    TECNICO_SUBS = [
-        ('diploma_tecnico_economico',   'T. economico',   PALETTE[1], '--', 1.5, None),
-        ('diploma_tecnico_tecnologico', 'T. tecnologico', PALETTE[1], ':',  1.5, None),
-    ]
-    ALL_BANDS = TOTALS + LICEALE_SUBS + TECNICO_SUBS
-
+def _plot_diploma_grid(df, bands, title, filename, out_dir):
+    """Shared 4×4 grid renderer for diploma plots."""
     fig, ax = plt.subplots(4, 4, sharex=True, figsize=(24, 20))
 
-    fig.suptitle(
-        'Tipo di diploma di provenienza (%) per gruppo disciplinare'
-        ' (classificazione MUR 2020)',
-        y=0.92,
-    )
+    fig.suptitle(title, y=0.92)
     fig.supxlabel('Anno di laurea', y=0.08)
     fig.supylabel('Quota di laureati [%]', x=0.07)
 
@@ -465,8 +424,7 @@ def plot_diploma_tipo(df, out_dir):
         anni = df_g['anno'].tolist()
 
         if g != 'tutti':
-            title = 'Gruppo ' + GRUPPO_ID[g]
-            ax[row][col].set_title(title.replace(' e ', ' e\n'))
+            ax[row][col].set_title(('Gruppo ' + GRUPPO_ID[g]).replace(' e ', ' e\n'))
             if col == 0:
                 ax[row][col].set_ylabel(area_nome[row])
         else:
@@ -477,10 +435,10 @@ def plot_diploma_tipo(df, out_dir):
                 va='bottom', fontsize=12,
             )
 
-        for col_name, label, color, ls, lw, marker in ALL_BANDS:
+        for col_name, label, color in bands:
             ax[row][col].plot(
                 anni, df_g[col_name].values,
-                color=color, ls=ls, lw=lw, marker=marker, label=label,
+                color=color, ls='-', lw=2, marker='o', label=label,
             )
 
         if g == 'tutti':
@@ -490,8 +448,64 @@ def plot_diploma_tipo(df, out_dir):
         ax[row][col].grid()
 
     plt.subplots_adjust(wspace=0.14, hspace=0.26)
-    plt.savefig(os.path.join(out_dir, 'diploma_tipo.png'), dpi=200, bbox_inches='tight')
+    plt.savefig(os.path.join(out_dir, filename), dpi=200, bbox_inches='tight')
     plt.close()
+
+
+def plot_diploma_aggregati(df, out_dir):
+    """Plot diploma aggregates (liceale, tecnico, professionale, titolo estero).
+
+    Produces diploma_aggregati.png.
+    """
+    bands = [
+        ('diploma_liceale',       'Liceale',       PALETTE[0]),
+        ('diploma_tecnico',       'Tecnico',        PALETTE[1]),
+        ('diploma_professionale', 'Professionale',  PALETTE[2]),
+        ('diploma_titolo_estero', 'Titolo estero',  PALETTE[3]),
+    ]
+    _plot_diploma_grid(
+        df, bands,
+        'Diploma di provenienza — categorie aggregate (%) per gruppo disciplinare'
+        ' (classificazione MUR 2020)',
+        'diploma_aggregati.png', out_dir,
+    )
+
+
+def plot_diploma_liceale_sub(df, out_dir):
+    """Plot Liceale sub-categories (classico, linguistico, scientifico, ...).
+
+    Produces diploma_liceale_sub.png.
+    """
+    bands = [
+        ('diploma_classico',      'Classico',       PALETTE[0]),
+        ('diploma_linguistico',   'Linguistico',    PALETTE[1]),
+        ('diploma_scientifico',   'Scientifico',    PALETTE[2]),
+        ('diploma_scienze_umane', 'Scienze umane',  PALETTE[3]),
+        ('diploma_artistico',     'Artistico/mus.', PALETTE[4]),
+    ]
+    _plot_diploma_grid(
+        df, bands,
+        'Diploma liceale — sotto-categorie (%) per gruppo disciplinare'
+        ' (classificazione MUR 2020)',
+        'diploma_liceale_sub.png', out_dir,
+    )
+
+
+def plot_diploma_tecnico_sub(df, out_dir):
+    """Plot Tecnico sub-categories (economico, tecnologico).
+
+    Produces diploma_tecnico_sub.png.
+    """
+    bands = [
+        ('diploma_tecnico_economico',   'Economico',   PALETTE[0]),
+        ('diploma_tecnico_tecnologico', 'Tecnologico', PALETTE[1]),
+    ]
+    _plot_diploma_grid(
+        df, bands,
+        'Diploma tecnico — sotto-categorie (%) per gruppo disciplinare'
+        ' (classificazione MUR 2020)',
+        'diploma_tecnico_sub.png', out_dir,
+    )
 
 
 def plot_voto_diploma(df, out_dir):
