@@ -11,6 +11,8 @@ from almalaurea.plots import (
     plot_gender_split,
     plot_eta_laurea,
     plot_classe_sociale,
+    plot_diploma_tipo,
+    plot_voto_diploma,
 )
 
 DATA_DIR  = os.path.join(os.path.dirname(__file__), 'data')
@@ -36,6 +38,8 @@ def main():
     plot_gender_split(df_profilo, PLOTS_DIR)
     plot_eta_laurea(df_profilo, PLOTS_DIR)
     plot_classe_sociale(df_profilo, PLOTS_DIR)
+    plot_diploma_tipo(df_profilo, PLOTS_DIR)
+    plot_voto_diploma(df_profilo, PLOTS_DIR)
 
 
 def collect_data():

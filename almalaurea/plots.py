@@ -407,6 +407,145 @@ def plot_eta_laurea(df, out_dir):
     plt.close()
 
 
+def plot_diploma_tipo(df, out_dir):
+    """Plot secondary-school diploma type distribution (%) by discipline group.
+
+    Produces diploma_tipo.png.
+
+    Solid lines (with markers) for the three aggregates:
+      diploma_liceale, diploma_tecnico, diploma_professionale.
+    Dashed lines for diploma_titolo_estero and the Tecnico sub-categories.
+    Dashed lines with distinct colours for the five Liceale sub-categories.
+
+    Parameters
+    ----------
+    df : pandas.DataFrame
+        Pre-loaded almalaurea_profilo.csv.
+    out_dir : str
+        Directory where the output PNG will be saved.
+    """
+    # (col_name, label, color, linestyle, linewidth, marker)
+    TOTALS = [
+        ('diploma_liceale',       'Liceale',        PALETTE[0], '-',  2.5, 'o'),
+        ('diploma_tecnico',       'Tecnico',         PALETTE[1], '-',  2.5, 'o'),
+        ('diploma_professionale', 'Professionale',   PALETTE[2], '-',  2.5, 'o'),
+        ('diploma_titolo_estero', 'Titolo estero',   PALETTE[3], '--', 1.5,  None),
+    ]
+    # Five Liceale sub-categories: distinct tab10-ish colours, all dashed
+    LICEALE_SUBS = [
+        ('diploma_classico',      'L. classico',     '#1f77b4', '--', 1.5, None),
+        ('diploma_linguistico',   'L. linguistico',  '#ff7f0e', '--', 1.5, None),
+        ('diploma_scientifico',   'L. scientifico',  '#2ca02c', '--', 1.5, None),
+        ('diploma_scienze_umane', 'L. sc. umane',    '#d62728', '--', 1.5, None),
+        ('diploma_artistico',     'L. artistico',    '#9467bd', '--', 1.5, None),
+    ]
+    # Two Tecnico sub-categories: same colour as Tecnico total, different dash
+    TECNICO_SUBS = [
+        ('diploma_tecnico_economico',   'T. economico',   PALETTE[1], '--', 1.5, None),
+        ('diploma_tecnico_tecnologico', 'T. tecnologico', PALETTE[1], ':',  1.5, None),
+    ]
+    ALL_BANDS = TOTALS + LICEALE_SUBS + TECNICO_SUBS
+
+    fig, ax = plt.subplots(4, 4, sharex=True, figsize=(24, 20))
+
+    fig.suptitle(
+        'Tipo di diploma di provenienza (%) per gruppo disciplinare'
+        ' (classificazione MUR 2020)',
+        y=0.92,
+    )
+    fig.supxlabel('Anno di laurea', y=0.08)
+    fig.supylabel('Quota di laureati [%]', x=0.07)
+
+    area_nome = ['ALE', 'EGS', 'STEM', 'SAV']
+    groups = [str(i) for i in range(1, 16)] + ['tutti']
+
+    for idx, g in enumerate(groups):
+        row, col = idx // 4, idx % 4
+        df_g = df[df['gruppo_id'] == g].sort_values('anno')
+        anni = df_g['anno'].tolist()
+
+        if g != 'tutti':
+            title = 'Gruppo ' + GRUPPO_ID[g]
+            ax[row][col].set_title(title.replace(' e ', ' e\n'))
+            if col == 0:
+                ax[row][col].set_ylabel(area_nome[row])
+        else:
+            ax[row][col].set_title('Totale')
+            ax[row][col].annotate(
+                'Source: AlmaLaurea\n\nElaboration by\nBiasissi Riccardo',
+                xy=(0.03, 0.03), xytext=(0.03, 0.03), xycoords='axes fraction',
+                va='bottom', fontsize=12,
+            )
+
+        for col_name, label, color, ls, lw, marker in ALL_BANDS:
+            ax[row][col].plot(
+                anni, df_g[col_name].values,
+                color=color, ls=ls, lw=lw, marker=marker, label=label,
+            )
+
+        if g == 'tutti':
+            ax[row][col].legend(loc='upper right', ncols=2, fontsize=10)
+
+        ax[row][col].set_ylim(0, None)
+        ax[row][col].grid()
+
+    plt.subplots_adjust(wspace=0.14, hspace=0.26)
+    plt.savefig(os.path.join(out_dir, 'diploma_tipo.png'), dpi=200, bbox_inches='tight')
+    plt.close()
+
+
+def plot_voto_diploma(df, out_dir):
+    """Plot mean secondary-school grade (100-mi scale) by discipline group.
+
+    Produces voto_diploma.png.
+
+    Parameters
+    ----------
+    df : pandas.DataFrame
+        Pre-loaded almalaurea_profilo.csv.
+    out_dir : str
+        Directory where the output PNG will be saved.
+    """
+    fig, ax = plt.subplots(4, 4, sharex=True, sharey=True, figsize=(24, 20))
+
+    fig.suptitle(
+        'Voto di diploma medio (in 100-mi) per gruppo disciplinare'
+        ' (classificazione MUR 2020)',
+        y=0.92,
+    )
+    fig.supxlabel('Anno di laurea', y=0.08)
+    fig.supylabel('Voto di diploma (media, 100-mi)', x=0.07)
+
+    area_nome = ['ALE', 'EGS', 'STEM', 'SAV']
+    groups = [str(i) for i in range(1, 16)] + ['tutti']
+
+    for idx, g in enumerate(groups):
+        row, col = idx // 4, idx % 4
+        df_g = df[df['gruppo_id'] == g].sort_values('anno')
+        anni = df_g['anno'].tolist()
+
+        if g != 'tutti':
+            title = 'Gruppo ' + GRUPPO_ID[g]
+            ax[row][col].set_title(title.replace(' e ', ' e\n'))
+            if col == 0:
+                ax[row][col].set_ylabel(area_nome[row])
+        else:
+            ax[row][col].set_title('Totale')
+            ax[row][col].annotate(
+                'Source: AlmaLaurea\n\nElaboration by\nBiasissi Riccardo',
+                xy=(0.03, 0.03), xytext=(0.03, 0.03), xycoords='axes fraction',
+                va='bottom', fontsize=12,
+            )
+
+        ax[row][col].plot(anni, df_g['voto_diploma'].values,
+                          marker='o', lw=2, color='black')
+        ax[row][col].grid()
+
+    plt.subplots_adjust(wspace=0.10, hspace=0.26)
+    plt.savefig(os.path.join(out_dir, 'voto_diploma.png'), dpi=200, bbox_inches='tight')
+    plt.close()
+
+
 def plot_classe_sociale(df, out_dir):
     """Plot social class of origin (%) by discipline group over time.
 
