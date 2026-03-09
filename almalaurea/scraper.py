@@ -125,10 +125,47 @@ def fetch_profile(university_id, area_id, gruppo_id):
         empty = np.array([np.nan])
         cs_elevata = cs_media_imp = cs_media_aut = cs_lavoro_es = empty
 
+    # --- Diploma (%) and Voto di diploma ---
+    # Section: "Diploma (%)" ... "Voto di diploma"
+    # Sub-rows (all ending with " sort" in the HTML):
+    #   Liceale / Liceo classico / Liceo linguistico / Liceo scientifico /
+    #   Liceo delle scienze umane / Liceo artistico e musicale e coreutico /
+    #   Tecnico / Tecnico economico / Tecnico tecnologico /
+    #   Professionale / Titolo estero
+    # "Voto di diploma (medie, in 100-mi)" is a separate row after the section.
+    t_dip = re.findall(r"Diploma \(%\)([\s\S]*?)Voto di diploma", text)
+    if t_dip:
+        dip_liceale     = _sub(t_dip[0], r"Liceale",              r"Liceo classico")
+        dip_classico    = _sub(t_dip[0], r"Liceo classico",        r"Liceo linguistico")
+        dip_linguistico = _sub(t_dip[0], r"Liceo linguistico",     r"Liceo scientifico")
+        dip_scientifico = _sub(t_dip[0], r"Liceo scientifico",     r"Liceo delle scienze")
+        dip_sc_umane    = _sub(t_dip[0], r"Liceo delle scienze",   r"Liceo artistico")
+        dip_artistico   = _sub(t_dip[0], r"Liceo artistico",       r"Tecnico")
+        dip_tecnico     = _sub(t_dip[0], r"Tecnico",               r"Tecnico economico")
+        dip_tec_eco     = _sub(t_dip[0], r"Tecnico economico",     r"Tecnico tecnologico")
+        dip_tec_tec     = _sub(t_dip[0], r"Tecnico tecnologico",   r"Professionale")
+        dip_prof        = _sub(t_dip[0], r"Professionale",         r"Titolo estero")
+        dip_estero      = _sub(t_dip[0], r"Titolo estero",         None)
+    else:
+        empty = np.array([np.nan])
+        dip_liceale = dip_classico = dip_linguistico = dip_scientifico = empty
+        dip_sc_umane = dip_artistico = dip_tecnico = dip_tec_eco = empty
+        dip_tec_tec = dip_prof = dip_estero = empty
+
+    # Voto di diploma: last row, extracted from everything after "Diploma (%)"
+    t_dip_ext = re.findall(r"Diploma \(%\)([\s\S]*)", text)
+    if t_dip_ext:
+        voto_diploma = _sub(t_dip_ext[0], r"Voto di diploma \(medie", None)
+    else:
+        voto_diploma = np.array([np.nan])
+
     return [num_laureati, pct_maschi, pct_femmine, voto_laurea,
             anni, ateneo, facolta, area, gruppo,
             eta_meno23, eta_23_24, eta_25_26, eta_27_oltre,
-            cs_elevata, cs_media_imp, cs_media_aut, cs_lavoro_es]
+            cs_elevata, cs_media_imp, cs_media_aut, cs_lavoro_es,
+            dip_liceale, dip_classico, dip_linguistico, dip_scientifico,
+            dip_sc_umane, dip_artistico, dip_tecnico, dip_tec_eco,
+            dip_tec_tec, dip_prof, dip_estero, voto_diploma]
 
 
 def fetch_employment(university_id, survey_year, area_id, gruppo_id,
