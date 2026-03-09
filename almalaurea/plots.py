@@ -2,7 +2,7 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 
-from almalaurea.constants import GRUPPO_ID, AREA_NOME, AREA_GRUPPI
+from almalaurea.constants import GRUPPO_ID, AREA_NOME, AREA_GRUPPI, PALETTE
 
 
 def plot_gender_split(df, out_dir):
@@ -47,8 +47,8 @@ def plot_gender_split(df, out_dir):
         if len(title) >= 35:
             title = title.replace(' e ', ' e\n')
         ax[row][col].set_title(title)
-        ax[row][col].plot(anni, M, color='royalblue', marker='o', lw=1.5, label='Maschi')
-        ax[row][col].plot(anni, F, color='deeppink',  marker='o', lw=1.5, label='Femmine')
+        ax[row][col].plot(anni, M, color=PALETTE[0], marker='o', lw=1.5, label='Maschi')
+        ax[row][col].plot(anni, F, color=PALETTE[1], marker='o', lw=1.5, label='Femmine')
         ax[row][col].plot([anni[0], anni[-1]], [50, 50], c='black', ls='dashed', lw=1.5)
         ax[row][col].grid()
 
@@ -63,8 +63,8 @@ def plot_gender_split(df, out_dir):
     F = df_tot['percentuale_femmine'].values
 
     ax[3][3].set_title(f'Totale - M: {round(M[-1], 1)}% - F: {round(F[-1], 1)}%')
-    ax[3][3].plot(anni, M, color='royalblue', marker='o', lw=2, label='Maschi')
-    ax[3][3].plot(anni, F, color='deeppink',  marker='o', lw=2, label='Femmine')
+    ax[3][3].plot(anni, M, color=PALETTE[0], marker='o', lw=2, label='Maschi')
+    ax[3][3].plot(anni, F, color=PALETTE[1], marker='o', lw=2, label='Femmine')
     ax[3][3].plot([anni[0], anni[-1]], [50, 50], c='black', ls='dashed', lw=1.5)
     ax[3][3].annotate(
         'Source: AlmaLaurea\n\nElaboration by\nBiasissi Riccardo',
@@ -112,8 +112,8 @@ def plot_salary_by_group(df, out_dir):
             F = df_t['retribuzione_mensile_femmine']
             T = df_t['retribuzione_mensile']
 
-            ax[row][col].plot(df_t['anno'], M, color='royalblue', marker='o', lw=1.5, label='Maschi')
-            ax[row][col].plot(df_t['anno'], F, color='deeppink',  marker='o', lw=1.5, label='Femmine')
+            ax[row][col].plot(df_t['anno'], M, color=PALETTE[0], marker='o', lw=1.5, label='Maschi')
+            ax[row][col].plot(df_t['anno'], F, color=PALETTE[1], marker='o', lw=1.5, label='Femmine')
             ax[row][col].plot(df_t['anno'], T, color='black',     marker='o', lw=1.5, label='Totale')
             ax[row][col].grid()
 
@@ -124,9 +124,9 @@ def plot_salary_by_group(df, out_dir):
         T = df_t['retribuzione_mensile']
 
         ax[3][3].set_title('Totale')
-        ax[3][3].plot(df_t['anno'], M, color='royalblue', marker='o', lw=2, label='Maschi')
-        ax[3][3].plot(df_t['anno'], F, color='deeppink',  marker='o', lw=2, label='Femmine')
-        ax[3][3].plot(df_t['anno'], T, color='black',     marker='o', lw=2, label='Totale')
+        ax[3][3].plot(df_t['anno'], M, color=PALETTE[0], marker='o', lw=2, label='Maschi')
+        ax[3][3].plot(df_t['anno'], F, color=PALETTE[1], marker='o', lw=2, label='Femmine')
+        ax[3][3].plot(df_t['anno'], T, color='black',    marker='o', lw=2, label='Totale')
         ax[3][3].grid()
         ax[3][3].legend()
         ax[3][3].annotate(
@@ -166,7 +166,7 @@ def plot_pay_gap(df, out_dir):
     fig.supylabel('Divario retributivo [%]', x=0.08)
 
     groups = [str(i) for i in range(1, 16)] + ['tutti']
-    colors = ['royalblue', 'deeppink', 'darkgreen']
+    colors = PALETTE[:3]
     labels = ['1 anno', '3 anni', '5 anni']
 
     for idx, g in enumerate(groups):
@@ -222,7 +222,7 @@ def plot_unemployment(df, out_dir):
     fig.supylabel('Tasso di disoccupazione [%]', x=0.08)
 
     groups = [str(i) for i in range(1, 16)] + ['tutti']
-    colors = ['royalblue', 'deeppink', 'darkgreen']
+    colors = PALETTE[:3]
     labels = ['1 anno', '3 anni', '5 anni']
 
     for idx, g in enumerate(groups):
@@ -352,10 +352,10 @@ def plot_eta_laurea(df, out_dir):
         Directory where the output PNG will be saved.
     """
     BANDS = [
-        ('eta_meno23',   '<23 anni',     'royalblue'),
-        ('eta_23_24',    '23-24 anni',   'darkorange'),
-        ('eta_25_26',    '25-26 anni',   'darkgreen'),
-        ('eta_27_oltre', '27+ anni',     'crimson'),
+        ('eta_meno23',   '<23 anni',   PALETTE[0]),
+        ('eta_23_24',    '23-24 anni', PALETTE[1]),
+        ('eta_25_26',    '25-26 anni', PALETTE[2]),
+        ('eta_27_oltre', '27+ anni',   PALETTE[3]),
     ]
 
     fig, ax = plt.subplots(4, 4, sharex=True, figsize=(24, 20))
@@ -389,16 +389,15 @@ def plot_eta_laurea(df, out_dir):
                 xy=(0.03, 0.03), xytext=(0.03, 0.03), xycoords='axes fraction',
                 va='bottom', fontsize=15,
             )
-            ax[row][col].legend(
-                [b[1] for b in BANDS],
-                loc='upper right', fontsize=11,
-            )
 
         for col_name, label, color in BANDS:
             ax[row][col].plot(
                 anni, df_g[col_name].values,
                 marker='o', lw=1.5, color=color, label=label,
             )
+
+        if g == 'tutti':
+            ax[row][col].legend(loc='upper right', fontsize=11)
 
         ax[row][col].set_ylim(0, 60)
         ax[row][col].grid()
@@ -423,10 +422,10 @@ def plot_classe_sociale(df, out_dir):
         Directory where the output PNG will be saved.
     """
     BANDS = [
-        ('cs_classe_elevata',    'Classe elevata',      'royalblue'),
-        ('cs_media_impiegatizia','Classe media imp.',   'darkorange'),
-        ('cs_media_autonoma',    'Classe media aut.',   'darkgreen'),
-        ('cs_lavoro_esecutivo',  'Lavoro esecutivo',    'crimson'),
+        ('cs_classe_elevata',     'Classe elevata',    PALETTE[0]),
+        ('cs_media_impiegatizia', 'Classe media imp.', PALETTE[1]),
+        ('cs_media_autonoma',     'Classe media aut.', PALETTE[2]),
+        ('cs_lavoro_esecutivo',   'Lavoro esecutivo',  PALETTE[3]),
     ]
 
     fig, ax = plt.subplots(4, 4, sharex=True, figsize=(24, 20))
@@ -460,16 +459,15 @@ def plot_classe_sociale(df, out_dir):
                 xy=(0.03, 0.03), xytext=(0.03, 0.03), xycoords='axes fraction',
                 va='bottom', fontsize=15,
             )
-            ax[row][col].legend(
-                [b[1] for b in BANDS],
-                loc='upper right', fontsize=11,
-            )
 
         for col_name, label, color in BANDS:
             ax[row][col].plot(
                 anni, df_g[col_name].values,
                 marker='o', lw=1.5, color=color, label=label,
             )
+
+        if g == 'tutti':
+            ax[row][col].legend(loc='upper right', fontsize=11)
 
         ax[row][col].set_ylim(0, 50)
         ax[row][col].grid()
