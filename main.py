@@ -25,8 +25,8 @@ def main():
     os.makedirs(PLOTS_DIR, exist_ok=True)
 
     # # Scrape data from AlmaLaurea and save to CSV files. Comment out if not needed.
-    # collect_data()
-    # collect_profile_data()
+    collect_data()
+    collect_profile_data()
 
     df = pd.read_csv(os.path.join(DATA_DIR, 'almalaurea.csv'))
 
@@ -55,7 +55,7 @@ def collect_data():
     C   = 'tutti'
     G   = ['tutti'] + [str(i) for i in range(1, 16)]
     YRL = [1, 3, 5]
-    Y   = list(range(2008, 2025))
+    Y   = list(range(2008, 2026))
 
     data = []
     with tqdm(total=len(G) * len(YRL) * len(Y)) as pbar:
